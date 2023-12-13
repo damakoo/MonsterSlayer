@@ -7,22 +7,35 @@ using TMPro;
 public class CardState : MonoBehaviour
 {
     //public bool isOpen;// { get; set; }
-    public int Number;// { get; set; }
+    public Vector3 Number;// { get; set; }
     public bool MyCard;
     public int ID { get; set; }
-    public Suit suit { get; set; }
-    private SuitPNG suitPNG;
     GameObject thisgameobject;
     Renderer thisrenderer;
-    TextMeshProUGUI thistextMeshPro;
+    TextMeshProUGUI text_x;
+    TextMeshProUGUI text_y;
+    TextMeshProUGUI text_z;
+
+    Transform pos_center;
+    Transform pos_x;
+    Transform pos_y;
+    Transform pos_z;
+    MeshFilter meshfilter;
     public CardState Initialize(GameObject _thisgameobject, bool _myCard, int _ID)
     {
         MyCard = _myCard;
         thisrenderer = GetComponent<Renderer>();
         //isOpen = false;
         thisgameobject = _thisgameobject;
-        thistextMeshPro = thisgameobject.transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>();
-        suitPNG = _thisgameobject.transform.GetChild(0).GetChild(1).GetComponent<SuitPNG>();
+        text_x = thisgameobject.transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>();
+        text_y = thisgameobject.transform.GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>();
+        text_z = thisgameobject.transform.GetChild(0).GetChild(2).GetComponent<TextMeshProUGUI>();
+        pos_center = this.transform.GetChild(1).transform;
+        pos_x = this.transform.GetChild(1).GetChild(0).transform;
+        pos_y = this.transform.GetChild(1).GetChild(1).transform;
+        pos_z = this.transform.GetChild(1).GetChild(2).transform;
+        meshfilter = this.transform.GetChild(1).GetComponent<MeshFilter>();
+        this.transform.GetChild(1).GetComponent<Renderer>().material.renderQueue = 4000; // UIよりも高い値
         ID = _ID;
         Close();
         return this;
@@ -31,44 +44,61 @@ public class CardState : MonoBehaviour
     public void Open()
     {
         //isOpen = true;
-        thistextMeshPro.text = Number.ToString();
+        text_x.text = Number.x.ToString();
+        text_y.text = Number.y.ToString();
+        text_z.text = Number.z.ToString();
         thisrenderer.material.color = Color.white;
-        suitPNG.SetSprite(DecideSuit(suit));
+        SetMesh();
     }
     public void Close()
     {
         //isOpen = false;
-        thistextMeshPro.text = "";
+        text_x.text = "";
+        text_y.text = "";
+        text_z.text = "";
         thisrenderer.material.color = Color.gray;
-        suitPNG.SetSprite(suitPNG.TransParent);
+        FadeMesh();
     }
 
     public void Clicked()
     {
         thisrenderer.material.color = Color.yellow;
     }
+    public void Clicked_deep()
+    {
+        thisrenderer.material.color = new Color(0.8f, 0.8f, 0.0f, 1.0f);
+    }
     public void UnClicked()
     {
         thisrenderer.material.color = Color.white;
     }
-    private Sprite DecideSuit(Suit _suit)
+    void SetMesh()
     {
-        switch (_suit)
-        {
-            case Suit.Spades:
-                return suitPNG.Spade;
 
-            case Suit.Diamonds:
-                return suitPNG.Diamond;
+        // 頂点を定義
+        Vector3[] vertices = {
+            pos_center.InverseTransformPoint(VerticePos((int)Number.x, MyCard?5:10, pos_center.position, pos_x.position)),
+            pos_center.InverseTransformPoint(VerticePos((int)Number.y, MyCard?5:10, pos_center.position, pos_y.position)),
+            pos_center.InverseTransformPoint(VerticePos((int)Number.z, MyCard?5:10, pos_center.position, pos_z.position)),
+            // 他の頂点を追加...
+        };
 
-            case Suit.Hearts:
-                return suitPNG.Heart;
+        // 三角形を定義
+        int[] triangles = {
+            0, 2, 1
+            // 他の三角形を追加...
+        };
 
-            case Suit.Clubs:
-                return suitPNG.Club;
-
-            default:
-                return null;
-        }
+        meshfilter.mesh.Clear();
+        meshfilter.mesh.vertices = vertices;
+        meshfilter.mesh.triangles = triangles;
+    }
+    void FadeMesh()
+    {
+        meshfilter.mesh.Clear();
+    }
+    private Vector3 VerticePos(int i, int _numberofcards, Vector3 start, Vector3 end)
+    {
+        return Vector3.Lerp(start, end, (float)i / ((float)_numberofcards));
     }
 }

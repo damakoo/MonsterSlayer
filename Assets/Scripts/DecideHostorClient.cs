@@ -10,7 +10,7 @@ public class DecideHostorClient : MonoBehaviour
     [SerializeField] BlackJackManager _BlackJackManager;
     [SerializeField] GameObject WaitforAnother;
     bool tryConnetcion = false;
-    public bool isConnecting = false;
+    public bool isConnecting { get; set; } = false;
     public PracticeSet _practiceSet { get; set; }
 
     // Update is called once per frame

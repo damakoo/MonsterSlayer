@@ -7,10 +7,10 @@ using System.Linq;
 
 public class PracticeSet: MonoBehaviourPunCallbacks
 {
-    BlackJackManager _BlackJackManager;
+    BlackJackManager _BlackJackManager { get; set; }
     private PhotonView _PhotonView;
-    public int MySelectedCard;// { get; set; }
-    public int YourSelectedCard;// { get; set; }
+    public int MySelectedCard { get; set; }
+    public int YourSelectedCard { get; set; }
     public void SetMySelectedCard(int card)
     {
         MySelectedCard = card;
@@ -33,12 +33,11 @@ public class PracticeSet: MonoBehaviourPunCallbacks
         // ここでカードデータを再構築
         YourSelectedCard = _Number;
     }
-    public List<List<int>> MyCardsPracticeList { get; set; } = new List<List<int>>();
-    public List<List<int>> YourCardsPracticeList { get; set; } = new List<List<int>>();
-    public List<int> FieldCardsPracticeList /*{ get; set; }*/ = new List<int>();
-    public void SetMyCardsPracticeList(List<List<int>> _MyCardsPracticeList)
+    public List<List<Vector3>> MyCardsPracticeList { get; set; } = new List<List<Vector3>>();
+    public List<Vector3> FieldCardsPracticeList /*{ get; set; }*/ = new List<Vector3>();
+    public void SetMyCardsPracticeList(List<List<Vector3>> _MyCardsPracticeList)
     {
-        List<List<int>> temp = _MyCardsPracticeList;
+        List<List<Vector3>> temp = _MyCardsPracticeList;
         MyCardsPracticeList = temp;
         _PhotonView.RPC("UpdateMyCardsPracticeListOnAllClients", RpcTarget.Others, SerializeCardList(_MyCardsPracticeList));
     }
@@ -48,21 +47,9 @@ public class PracticeSet: MonoBehaviourPunCallbacks
         // ここでカードデータを再構築
         MyCardsPracticeList = DeserializeCardList(serializeCards);
     }
-    public void SetYourCardsPracticeList(List<List<int>> _YourCardsPracticeList)
+    public void SetFieldCardsList(List<Vector3> _FieldCardsPracticeList)
     {
-        List<List<int>> temp = _YourCardsPracticeList;
-        YourCardsPracticeList = temp;
-        _PhotonView.RPC("UpdateYourCardsPracticeListOnAllClients", RpcTarget.Others, SerializeCardList(_YourCardsPracticeList));
-    }
-    [PunRPC]
-    void UpdateYourCardsPracticeListOnAllClients(string serializeCards)
-    {
-        // ここでカードデータを再構築
-        YourCardsPracticeList = DeserializeCardList(serializeCards);
-    }
-    public void SetFieldCardsList(List<int> _FieldCardsPracticeList)
-    {
-        List<int> temp = FieldCardsPracticeList;
+        List<Vector3> temp = FieldCardsPracticeList;
         FieldCardsPracticeList = temp;
         _PhotonView.RPC("UpdateFieldCardsPracticeListOnAllClients", RpcTarget.Others, SerializeFieldCard(_FieldCardsPracticeList));
     }
@@ -73,20 +60,42 @@ public class PracticeSet: MonoBehaviourPunCallbacks
         FieldCardsPracticeList = DeserializeFieldCard(serializeCards);
     }
 
-    private string SerializeCardList(List<List<int>> cards)
+    private string SerializeCardList(List<List<Vector3>> cards)
     {
 
-        string cards_json = "[";
-        for (int i = 0; i < cards.Count; i++)
+        string cards_json = "";
+        for (int set = 0; set < NumberofSet; set++)
         {
-            cards_json += JsonHelper.ToJson(cards[i]) + ",";
+            for(int card = 0;card < NumberofCards; card++)
+            {
+                cards_json += SerializeVector3(cards[set][card]) + ",";
+            }
         }
         cards_json = cards_json.Remove(cards_json.Length - 1);
-        cards_json += "]";
+        //cards_json += "]";
         return cards_json;
     }
+    private string SerializeVector3(Vector3 cards)
+    {
+        return "[" + cards.x.ToString() + "," + cards.y.ToString() + "," + cards.z.ToString() + "]";
+    }
+    private Vector3 DeSerializeVector3(string cards)
+    {
+        // 角括弧を取り除く
+        cards = cards.TrimStart('[').TrimEnd(']');
 
-    private List<List<int>> DeserializeCardList(string json)
+        // コンマで分割
+        string[] values = cards.Split(',');
+
+        // floatに変換してVector3を作成
+        float x = float.Parse(values[0]);
+        float y = float.Parse(values[1]);
+        float z = float.Parse(values[2]);
+
+        return new Vector3(x, y, z);
+    }
+
+    private List<List<Vector3>> DeserializeCardList(string json)
     {
         Regex regex = new Regex(@"\d+");
 
@@ -95,26 +104,40 @@ public class PracticeSet: MonoBehaviourPunCallbacks
         {
             numbers.Add(int.Parse(match.Value));
         }
-        List<List<int>> cardList = new List<List<int>>();
-        // JSON 文字列を int[] の配列に変換
-        for(int i = 0; i<NumberofSet; i++)
+
+        List<List<Vector3>> cardList = new List<List<Vector3>>();
+
+        // JSON 文字列を Vector3[] の配列に変換
+        for (int i = 0; i < NumberofSet; i++)
         {
-            List<int> Element = new List<int>();
-            for(int j = 0; j < NumberofCards; j++)
+            List<Vector3> element = new List<Vector3>();
+            for (int j = 0; j < NumberofCards; j++)
             {
-                Element.Add(numbers[i*NumberofCards + j]);
+                // ここで3つの数値を取り出してVector3に変換
+                int index = i * NumberofCards + j * 3; // Vector3ごとに3つの数値が必要
+                if (index + 2 < numbers.Count) // インデックスが範囲内であることを確認
+                {
+                    Vector3 vector = new Vector3(numbers[index], numbers[index + 1], numbers[index + 2]);
+                    element.Add(vector);
+                }
             }
-            cardList.Add(Element);
+            cardList.Add(element);
         }
         return cardList;
     }
 
-    private string SerializeFieldCard(List<int> cards)
+    private string SerializeFieldCard(List<Vector3> cards)
     {
-        return JsonHelper.ToJson(cards);
+        string cards_json = "";
+        for (int set = 0; set < NumberofSet; set++)
+        {
+            cards_json += SerializeVector3(cards[set]) + ",";
+        }
+        cards_json = cards_json.Remove(cards_json.Length - 1);
+        return cards_json;
     }
 
-    private List<int> DeserializeFieldCard(string serializedCards)
+    private List<Vector3> DeserializeFieldCard(string serializedCards)
     {
         Regex regex = new Regex(@"\d+");
 
@@ -122,9 +145,23 @@ public class PracticeSet: MonoBehaviourPunCallbacks
         foreach (Match match in regex.Matches(serializedCards))
         {
             numbers.Add(int.Parse(match.Value));
-        }        
-        return numbers;
+        }
+
+        List<Vector3> vectorList = new List<Vector3>();
+
+        // 3つの連続する数値を取り出してVector3に変換
+        for (int i = 0; i < numbers.Count; i += 3)
+        {
+            if (i + 2 < numbers.Count) // インデックスが範囲内であることを確認
+            {
+                Vector3 vector = new Vector3(numbers[i], numbers[i + 1], numbers[i + 2]);
+                vectorList.Add(vector);
+            }
+        }
+
+        return vectorList;
     }
+
 
     [System.Serializable]
     private class SerializationWrapper<T>
@@ -137,46 +174,7 @@ public class PracticeSet: MonoBehaviourPunCallbacks
         }
     }
 
-    public List<List<int>> MyCardsSuitPracticeList = new List<List<int>>();
-    public List<List<int>> YourCardsSuitPracticeList = new List<List<int>>();
-    public List<int> FieldCardsSuitPracticeList = new List<int>();
-    public void SetMyCardsSuitPracticeList(List<List<int>> _MyCardsSuitPracticeList)
-    {
-        List<List<int>> temp = _MyCardsSuitPracticeList;
-        MyCardsSuitPracticeList = temp;
-        _PhotonView.RPC("UpdateMyCardsSuitPracticeListOnAllClients", RpcTarget.Others, SerializeCardList(_MyCardsSuitPracticeList));
-    }
-    [PunRPC]
-    void UpdateMyCardsSuitPracticeListOnAllClients(string serializeCards)
-    {
-        // ここでカードデータを再構築
-        MyCardsSuitPracticeList = DeserializeCardList(serializeCards);
-    }
-    public void SetYourCardsSuitPracticeList(List<List<int>> _YourCardsSuitPracticeList)
-    {
-        List<List<int>> temp = _YourCardsSuitPracticeList;
-        YourCardsSuitPracticeList = temp;
-        _PhotonView.RPC("UpdateYourCardsSuitPracticeListOnAllClients", RpcTarget.Others, SerializeCardList(_YourCardsSuitPracticeList));
-    }
-    [PunRPC]
-    void UpdateYourCardsSuitPracticeListOnAllClients(string serializeCards)
-    {
-        // ここでカードデータを再構築
-        YourCardsSuitPracticeList = DeserializeCardList(serializeCards);
-    }
-    public void SetFieldCardsSuitList(List<int> _FieldCardsSuitPracticeList)
-    {
-        List<int> temp = FieldCardsSuitPracticeList;
-        FieldCardsSuitPracticeList = temp;
-        _PhotonView.RPC("UpdateFieldCardsSuitPracticeListOnAllClients", RpcTarget.Others, SerializeFieldCard(_FieldCardsSuitPracticeList));
-    }
-    [PunRPC]
-    void UpdateFieldCardsSuitPracticeListOnAllClients(string serializeCards)
-    {
-        // ここでカードデータを再構築
-        FieldCardsSuitPracticeList = DeserializeFieldCard(serializeCards);
-    }
-
+    
     public enum BlackJackStateList
     {
         BeforeStart,
@@ -214,14 +212,10 @@ public class PracticeSet: MonoBehaviourPunCallbacks
     public int NumberofCards = 5;
 
 
-    public int NumberofSet = 10;
-    int FieldCards = 0;
+    public int NumberofSet = 5;
+    Vector3 FieldCards = Vector3.zero;
 
-    List<int> MyCards;
-    List<int> YourCards;
-    private static List<int> MyCardsSuit;
-    private static List<int> YourCardsSuit;
-    private static int FieldCardsSuit = 0;
+    List<Vector3> MyCards;
     private void Start()
     {
         _PhotonView = GetComponent<PhotonView>();
@@ -231,32 +225,13 @@ public class PracticeSet: MonoBehaviourPunCallbacks
     {
         for (int i = 0; i < NumberofSet; i++)
         {
-            //DecidingCards(Random.Range(0, NumberofCards));
-            DecidingCards(RandomValue());
+            DecidingCards();
             FieldCardsPracticeList.Add(FieldCards);
             MyCardsPracticeList.Add(MyCards);
-            YourCardsPracticeList.Add(YourCards);
-            FieldCardsSuitPracticeList.Add(FieldCardsSuit);
-            MyCardsSuitPracticeList.Add(MyCardsSuit);
-            YourCardsSuitPracticeList.Add(YourCardsSuit);
         }
         SetMyCardsPracticeList(MyCardsPracticeList);
-        SetYourCardsPracticeList(YourCardsPracticeList);
         SetFieldCardsList(FieldCardsPracticeList);
-        SetMyCardsSuitPracticeList(MyCardsSuitPracticeList);
-        SetYourCardsSuitPracticeList(YourCardsSuitPracticeList);
-        SetFieldCardsSuitList(FieldCardsSuitPracticeList);
         InitializeCard();
-    }
-    private int RandomValue()
-    {
-        int result = Random.Range(0, 4);
-        while(result == 1)
-        {
-            result = Random.Range(0, 4);
-        }
-        Debug.Log(result);
-        return result;
     }
     public void InitializeCard()
     {
@@ -270,7 +245,7 @@ public class PracticeSet: MonoBehaviourPunCallbacks
         _BlackJackManager.InitializeCard();
     }
 
-    void DecidingCards(int _j)
+    void DecidingCards()
     {
         DecideRandomCards();
         while (CheckDoubleCard())
@@ -278,136 +253,42 @@ public class PracticeSet: MonoBehaviourPunCallbacks
             DecideRandomCards();
         }
     }
-
-    void DecideCards(int _j)
-    {
-        MyCards = new List<int>();
-        YourCards = new List<int>();
-        MyCardsSuit = new List<int>();
-        YourCardsSuit = new List<int>();
-        FieldCards = UnityEngine.Random.Range(1, 14);
-        FieldCardsSuit = UnityEngine.Random.Range(0, 4);
-        int _targetSum = 21 - FieldCards;
-        if (_j > 0)
-        {
-            for (int i = 0; i < _j; i++)
-            {
-                int card = UnityEngine.Random.Range(1, 14);
-                while (ValidityCheck(_targetSum, card, MyCards))
-                {
-                    card = UnityEngine.Random.Range(1, 14);
-                }
-                MyCards.Add(card);
-                YourCards.Add(_targetSum - card);
-                MyCardsSuit.Add(UnityEngine.Random.Range(0, 4));
-                YourCardsSuit.Add(UnityEngine.Random.Range(0, 4));
-            }
-        }
-        if (_j < NumberofCards)
-        {
-            for (int i = 0; i < NumberofCards - _j; i++)
-            {
-                int mycard = UnityEngine.Random.Range(1, 14);
-                int yourcard = UnityEngine.Random.Range(1, 14);
-                while (ValidityCheck_remaining(_targetSum, mycard, yourcard, MyCards, YourCards))
-                {
-                    mycard = UnityEngine.Random.Range(1, 14);
-                    yourcard = UnityEngine.Random.Range(1, 14);
-                }
-                MyCards.Add(mycard);
-                YourCards.Add(yourcard);
-                MyCardsSuit.Add(UnityEngine.Random.Range(0, 4));
-                YourCardsSuit.Add(UnityEngine.Random.Range(0, 4));
-            }
-        }
-        ShuffleCards();
-    }
     void DecideRandomCards()
     {
-        MyCards = new List<int>();
-        YourCards = new List<int>();
-        MyCardsSuit = new List<int>();
-        YourCardsSuit = new List<int>();
-        FieldCards = UnityEngine.Random.Range(1, 14);
-        //FieldCards = 6;
-        FieldCardsSuit = UnityEngine.Random.Range(0, 4);
-        for (int i = 0; i < 5; i++)
+        MyCards = new List<Vector3>();
+        FieldCards = new Vector3(Random.Range(6, 11), Random.Range(6, 11), Random.Range(6, 11));
+        for (int i = 0; i < NumberofCards; i++)
         {
-            MyCards.Add(UnityEngine.Random.Range(1, 14));
-            YourCards.Add(UnityEngine.Random.Range(1, 14));
-            //MyCards.Add(i + 6);
-            //YourCards.Add(i + 5);
-            MyCardsSuit.Add(UnityEngine.Random.Range(0, 4));
-            YourCardsSuit.Add(UnityEngine.Random.Range(0, 4));
+            MyCards.Add(new Vector3(Random.Range(1, 6), Random.Range(1, 6), Random.Range(1, 6)));
         }
         ShuffleCards();
     }
     private bool CheckDoubleCard()
     {
-        var combinedList = new List<(int, int)>();
+        // HashSetを使用して重複をチェック
+        HashSet<Vector3> seen = new HashSet<Vector3>();
 
-        // MyCards と MyCardsSuit の組み合わせを追加
-        for (int i = 0; i < MyCards.Count; i++)
+        foreach (Vector3 card in MyCards)
         {
-            combinedList.Add((MyCards[i], MyCardsSuit[i]));
+            // もし既に同じVector3が存在したら、重複があると判定
+            if (seen.Contains(card))
+            {
+                return true;
+            }
+            seen.Add(card);
         }
 
-        // YourCards と YourCardsSuit の組み合わせを追加
-        for (int i = 0; i < YourCards.Count; i++)
-        {
-            combinedList.Add((YourCards[i], YourCardsSuit[i]));
-        }
-
-        // FieldCards と FieldCardsSuit の組み合わせを追加
-        combinedList.Add((FieldCards, FieldCardsSuit));
-
-        // 重複があるかチェック
-        return combinedList.GroupBy(x => x).Any(g => g.Count() > 1);
-    }
-    bool CheckmorethanfourCards()
-    {
-        bool Result = false;
-        for (int k = 1; k < 14; k++)
-        {
-            int number = 0;
-            if (FieldCards == k) number++;
-            foreach (var i in MyCards) if (i == k) number++;
-            foreach (var i in YourCards) if (i == k) number++;
-            if (number > 4) Result = true;
-        }
-        return Result;
-    }
-    bool ValidityCheck(int _targetSum, int card, List<int> _MyCard)
-    {
-        bool Result = false;
-        if (_targetSum <= card) Result = true;
-        if (_targetSum - card > 13) Result = true;
-        foreach (var eachcard in _MyCard) if (eachcard == card) Result = true;
-        return Result;
-    }
-    bool ValidityCheck_remaining(int _targetSum, int mycard, int yourcard, List<int> _MyCard, List<int> _YourCard)
-    {
-        bool Result = false;
-        if (mycard + yourcard == _targetSum) Result = true;
-        //foreach (var eachcard in _MyCard) if (eachcard == mycard) Result = true;
-        foreach (var eachcard in _MyCard) if (yourcard + eachcard == _targetSum) Result = true;
-        return Result;
+        // 重複が見つからなければfalseを返す
+        return false;
     }
     void ShuffleCards()
     {
         for (int i = 0; i < MyCards.Count; i++)
         {
             int randomIndex = UnityEngine.Random.Range(i, MyCards.Count);
-            int temp = MyCards[i];
+            Vector3 temp = MyCards[i];
             MyCards[i] = MyCards[randomIndex];
             MyCards[randomIndex] = temp;
-        }
-        for (int i = 0; i < YourCards.Count; i++)
-        {
-            int randomIndex = UnityEngine.Random.Range(i, YourCards.Count);
-            int temp = YourCards[i];
-            YourCards[i] = YourCards[randomIndex];
-            YourCards[randomIndex] = temp;
         }
     }
 
@@ -423,16 +304,16 @@ public class PracticeSet: MonoBehaviourPunCallbacks
         _BlackJackManager.MoveToWaitForNextTrial(_nowTrial);
     }
 
-    public void MoveToShowMyCards(int hostorClient)
+    public void MoveToShowMyCards()
     {
-        _BlackJackManager.MoveToShowMyCards(0);
+        _BlackJackManager.MoveToShowMyCards();
         _PhotonView.RPC("RPCMoveToShowMyCards", RpcTarget.Others);
     }
     [PunRPC]
     void RPCMoveToShowMyCards()
     {
         // ここでカードデータを再構築
-        _BlackJackManager.MoveToShowMyCards(1);
+        _BlackJackManager.MoveToShowMyCards();
     }
     
     public void MoveToSelectCards()

@@ -45,14 +45,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 028f8569a16ca4d3cb86065c27401682, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MySelectedCard: 0
-  YourSelectedCard: 0
-  FieldCardsPracticeList: 
-  FieldCardsSuitPracticeList: 
+  FieldCardsPracticeList: []
   BlackJackState: 0
   TrialAll: 5
   NumberofCards: 5
-  NumberofSet: 10
+  NumberofSet: 5
 --- !u!114 &2385453104751281697
 MonoBehaviour:
   m_ObjectHideFlags: 0

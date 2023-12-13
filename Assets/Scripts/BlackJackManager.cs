@@ -2,11 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-using static BlackJackManager;
 
 public class BlackJackManager : MonoBehaviour
 {
-    [SerializeField] bool useSuit = false;
     [SerializeField] CardsList _cardslist;
     [SerializeField] int TimeLimit;
     [SerializeField] int ShowMyCardsTime = 5;
@@ -17,10 +15,8 @@ public class BlackJackManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI MyScoreUI;
     [SerializeField] DecideHostorClient _decideHostorClient;
     [SerializeField] GameObject StartingUi;
-    //[SerializeField] TextMeshProUGUI YourScoreUI;
     public PracticeSet _PracticeSet { get; set; }
-    private List<int> MaxScoreList = new List<int>();
-    private List<int> ScoreList = new List<int>();
+    private List<bool> ScoreList = new List<bool>();
 
     public enum HostorClient
     {
@@ -36,7 +32,7 @@ public class BlackJackManager : MonoBehaviour
     [SerializeField] HowShowCard _HowShowCard;
     int nowTrial = 0;
     float nowTime = 0;
-    private int Score = 0;
+    private bool Score = false;
     public bool hasPracticeSet { get; set; } = false;
     // Start is called before the first frame update
     void Start()
@@ -145,7 +141,7 @@ public class BlackJackManager : MonoBehaviour
                         }
                         else if(_hostorclient == HostorClient.Client)
                         {
-                            _cardslist.YourCardsOpen();
+                            _cardslist.MyCardsOpen();
                             _PracticeSet.SetYourSelectedCard(thisCard.ID);
                             thisCard.Clicked();
                         }
@@ -175,21 +171,14 @@ public class BlackJackManager : MonoBehaviour
         }
     }
 
-    public void MoveToShowMyCards(int hostorClient)
+    public void MoveToShowMyCards()
     {
-        if(hostorClient == (int)HostorClient.Host)
-        {
-            _cardslist.MyCardsOpen();
-        }
-        else if (hostorClient == (int)HostorClient.Client)
-        {
-            _cardslist.YourCardsOpen();
-        }
+        _cardslist.FieldCardsOpen();
         _PracticeSet.BlackJackState = PracticeSet.BlackJackStateList.ShowMyCards;
     }
     public void PhotonMoveToShowMyCards()
     {
-        _PracticeSet.MoveToShowMyCards((int)_hostorclient);
+        _PracticeSet.MoveToShowMyCards();
     }
     public void MoveToSelectCards()
     {
@@ -203,36 +192,23 @@ public class BlackJackManager : MonoBehaviour
     public void MoveToShowResult()
     {
         _cardslist.MyCardsList[_PracticeSet.MySelectedCard].Clicked();
-        _cardslist.YourCardsList[_PracticeSet.YourSelectedCard].Clicked();
-        
-        /*foreach (var card in _cardslist.MyCardsList_opponent)
-        {
-            if (card.Number == _PracticeSet.YourSelectedCard.Number) card.Clicked();
-        }
-        foreach (var card in _cardslist.YourCardsList_opponent)
-        {
-            if (card.Number == _PracticeSet.MySelectedCard.Number) card.Clicked();
-        }*/
+        _cardslist.MyCardsList[_PracticeSet.YourSelectedCard].Clicked();
+        if(_PracticeSet.MySelectedCard == _PracticeSet.YourSelectedCard) _cardslist.MyCardsList[_PracticeSet.MySelectedCard].Clicked_deep();
+
+        _cardslist.MyResultCard.Number = _cardslist.MyCardsList[_PracticeSet.MySelectedCard].Number + _cardslist.MyCardsList[_PracticeSet.YourSelectedCard].Number;
+        _cardslist.MyResultCard.Open();
         Score = CalculateResult();
-        _blackJackRecorder.RecordResult(_cardslist.MyCardsList[_PracticeSet.MySelectedCard].Number, _cardslist.YourCardsList[_PracticeSet.YourSelectedCard].Number, (useSuit) ? CalculateSuitScore(): Score);
+        _blackJackRecorder.RecordResult(_PracticeSet.MySelectedCard+1, _PracticeSet.YourSelectedCard+1, Score);
         _PracticeSet.BlackJackState = PracticeSet.BlackJackStateList.ShowResult;
-        MyScoreUI.text = (useSuit)?CalculateScorewithSuit():Score.ToString();
+        MyScoreUI.text = Score?"Win!":"Lose!";
         ScoreList.Add(Score);
-        if (useSuit)
-        {
-            RecordMaxSuitScore();
-        }
-        else
-        {
-            RecordMaxScore();
-        }
         //YourScoreUI.text = Score.ToString();
         nowTime = 0;
         nowTrial += 1;
         if(nowTrial == _PracticeSet.TrialAll)
         {
             _PracticeSet.BlackJackState = PracticeSet.BlackJackStateList.Finished;
-            FinishUI.text = "Finished! \n Score:" + ReturnSum(ScoreList).ToString() + "/" + ReturnSum(MaxScoreList).ToString();
+            FinishUI.text = "Finished! \n Score:" + ReturnSum(ScoreList).ToString() + "/ 5";
             //_blackJackRecorder.WriteResult();
             _blackJackRecorder.ExportCsv();
         }
@@ -256,9 +232,13 @@ public class BlackJackManager : MonoBehaviour
     {
         _PracticeSet.MoveToWaitForNextTrial(_nowTrial);
     }
-    private int CalculateResult()
+    private bool CalculateResult()
     {
-        return (_cardslist.MyCardsList[_PracticeSet.MySelectedCard].Number + _cardslist.YourCardsList[_PracticeSet.YourSelectedCard].Number + _PracticeSet.FieldCardsPracticeList[nowTrial] > 21)?0: _cardslist.MyCardsList[_PracticeSet.MySelectedCard].Number + _cardslist.YourCardsList[_PracticeSet.YourSelectedCard].Number + _PracticeSet.FieldCardsPracticeList[nowTrial];
+        bool result = true;
+        if (_cardslist.MyFieldCard.Number.x > _cardslist.MyResultCard.Number.x) result = false;
+        if (_cardslist.MyFieldCard.Number.y > _cardslist.MyResultCard.Number.y) result = false;
+        if (_cardslist.MyFieldCard.Number.z > _cardslist.MyResultCard.Number.z) result = false;
+        return result;
     }
     public void MakeReadyHost()
     {
@@ -276,87 +256,12 @@ public class BlackJackManager : MonoBehaviour
     {
         _PracticeSet.MakeReadyClient();
     }
-    private string CalculateScorewithSuit()
-    {
-        string result = Score.ToString();
-        if (_cardslist.MyCardsList[_PracticeSet.MySelectedCard].suit.GetColor() == _cardslist.YourCardsList[_PracticeSet.YourSelectedCard].suit.GetColor())
-        {
-            if(_cardslist.MyCardsList[_PracticeSet.MySelectedCard].suit == _cardslist.YourCardsList[_PracticeSet.YourSelectedCard].suit)
-            {
-                result += " x 1.2 = " + Mathf.Ceil(Score * 1.2f).ToString();
-            }
-            else
-            {
-                result += " x 1.1 = " + Mathf.Ceil(Score * 1.1f).ToString();
-            }
-        }
-        else
-        {
-            result += " x 1.0 = " + Score.ToString();
-        }
-        return result;
-    }
-    private int CalculateSuitScore()
-    {
-        if (_cardslist.MyCardsList[_PracticeSet.MySelectedCard].suit.GetColor() == _cardslist.YourCardsList[_PracticeSet.YourSelectedCard].suit.GetColor())
-        {
-            if (_cardslist.MyCardsList[_PracticeSet.MySelectedCard].suit == _cardslist.YourCardsList[_PracticeSet.YourSelectedCard].suit)
-            {
-                return (int)Mathf.Ceil(Score * 1.2f);
-            }
-            else
-            {
-                return (int)Mathf.Ceil(Score * 1.1f);
-            }
-        }
-        else
-        {
-            return Score;
-        }
-    }
-    private void RecordMaxScore()
-    {
-        int MaxScore = 0;
-        for(int i = 0; i< _cardslist.MyCardsList.Count; i++)
-        {
-            for(int j = 0; j < _cardslist.YourCardsList.Count; j++)
-            {
-                int _score = (_cardslist.MyCardsList[i].Number + _cardslist.YourCardsList[j].Number + _PracticeSet.FieldCardsPracticeList[nowTrial] > 21) ? 0 : _cardslist.MyCardsList[i].Number + _cardslist.YourCardsList[j].Number + _PracticeSet.FieldCardsPracticeList[nowTrial];
-                if (MaxScore < _score) MaxScore = _score;
-            }
-        }
-        MaxScoreList.Add(MaxScore);
-    }
-    private void RecordMaxSuitScore()
-    {
-        int MaxScore = 0;
-        for (int i = 0; i < _cardslist.MyCardsList.Count; i++)
-        {
-            for (int j = 0; j < _cardslist.YourCardsList.Count; j++)
-            {
-                int _score = (_cardslist.MyCardsList[i].Number + _cardslist.YourCardsList[j].Number + _PracticeSet.FieldCardsPracticeList[nowTrial] > 21) ? 0 : _cardslist.MyCardsList[i].Number + _cardslist.YourCardsList[j].Number + _PracticeSet.FieldCardsPracticeList[nowTrial];
-                if (_cardslist.MyCardsList[i].suit.GetColor() == _cardslist.YourCardsList[j].suit.GetColor())
-                {
-                    if (_cardslist.MyCardsList[i].suit == _cardslist.YourCardsList[j].suit)
-                    {
-                        _score = (int)Mathf.Ceil(_score * 1.2f);
-                    }
-                    else
-                    {
-                        _score = (int)Mathf.Ceil(Score * 1.1f);
-                    }
-                }
-                if (MaxScore < _score) MaxScore = _score;
-            }
-        }
-        MaxScoreList.Add(MaxScore);
-    }
-    private int ReturnSum(List<int> _list)
+    private int ReturnSum(List<bool> _list)
     {
         int result = 0;
         foreach(var element in _list)
         {
-            result += element;
+            if(element) result += 1;
         }
         return result;
     }
