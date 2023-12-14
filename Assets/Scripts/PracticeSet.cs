@@ -114,7 +114,7 @@ public class PracticeSet: MonoBehaviourPunCallbacks
             for (int j = 0; j < NumberofCards; j++)
             {
                 // ここで3つの数値を取り出してVector3に変換
-                int index = i * NumberofCards + j * 3; // Vector3ごとに3つの数値が必要
+                int index = (i * NumberofCards + j) * 3; // Vector3ごとに3つの数値が必要
                 if (index + 2 < numbers.Count) // インデックスが範囲内であることを確認
                 {
                     Vector3 vector = new Vector3(numbers[index], numbers[index + 1], numbers[index + 2]);
@@ -256,10 +256,19 @@ public class PracticeSet: MonoBehaviourPunCallbacks
     void DecideRandomCards()
     {
         MyCards = new List<Vector3>();
-        FieldCards = new Vector3(Random.Range(6, 11), Random.Range(6, 11), Random.Range(6, 11));
+        FieldCards = new Vector3(Random.Range(1, 9), Random.Range(1, 9), Random.Range(1, 9));
+        while((FieldCards.x + FieldCards.y+ FieldCards.z) / 3 < 5 || (FieldCards.x + FieldCards.y + FieldCards.z) / 3 > 6.5f)
+        {
+            FieldCards = new Vector3(Random.Range(1, 9), Random.Range(1, 9), Random.Range(1, 9));
+        }
         for (int i = 0; i < NumberofCards; i++)
         {
-            MyCards.Add(new Vector3(Random.Range(1, 6), Random.Range(1, 6), Random.Range(1, 6)));
+            Vector3 card = new Vector3(Random.Range(1, 6), Random.Range(1, 6), Random.Range(1, 6));
+            while ((card.x + card.y + card.z) / 3 < 3 || (card.x + card.y + card.z) / 3 > 4)
+            {
+                card = new Vector3(Random.Range(1, 6), Random.Range(1, 6), Random.Range(1, 6));
+            }
+            MyCards.Add(card);
         }
         ShuffleCards();
     }
