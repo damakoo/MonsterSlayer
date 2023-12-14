@@ -280,17 +280,17 @@ public class PracticeSet: MonoBehaviourPunCallbacks
     void DecideRandomCards()
     {
         MyCards = new List<Vector3>();
-        FieldCards = new Vector3(Random.Range(1, 9), Random.Range(1, 9), Random.Range(1, 9));
-        while((FieldCards.x + FieldCards.y+ FieldCards.z) / 3 < 5.4f || (FieldCards.x + FieldCards.y + FieldCards.z) / 3 > 7f)
+        FieldCards = new Vector3(Random.Range(2, 7), Random.Range(2, 7), Random.Range(2, 7));
+        while ((FieldCards.x + FieldCards.y + FieldCards.z) != 10)// / 3 < 5.4f || (FieldCards.x + FieldCards.y + FieldCards.z) / 3 > 7f)
         {
-            FieldCards = new Vector3(Random.Range(1, 9), Random.Range(1, 9), Random.Range(1, 9));
+            FieldCards = new Vector3(Random.Range(2, 7), Random.Range(2, 7), Random.Range(2, 7));
         }
         for (int i = 0; i < NumberofCards; i++)
         {
-            Vector3 card = new Vector3(Random.Range(1, 6), Random.Range(1, 6), Random.Range(1, 6));
-            while ((card.x + card.y + card.z) / 3 < 2.6f || (card.x + card.y + card.z) / 3 > 4.0f)
+            Vector3 card = new Vector3(Random.Range(1, 5), Random.Range(1, 5), Random.Range(1, 5));
+            while ((card.x + card.y + card.z) != 4)/// 3 < 2.6f || (card.x + card.y + card.z) / 3 > 4.0f)
             {
-                card = new Vector3(Random.Range(1, 6), Random.Range(1, 6), Random.Range(1, 6));
+                card = new Vector3(Random.Range(1, 5), Random.Range(1, 5), Random.Range(1, 5));
             }
             MyCards.Add(card);
         }
