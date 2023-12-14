@@ -98,7 +98,12 @@ public class BlackJackManager : MonoBehaviour
             }
             else if (_hostorclient == HostorClient.Client && _PracticeSet.BlackJackState == PracticeSet.BlackJackStateList.SelectCards)
             {
+                nowTime += Time.deltaTime;
                 BlackJacking();
+            }
+            else if (_hostorclient == HostorClient.Client)
+            {
+                nowTime = 0;
             }
         }
     }
@@ -137,12 +142,14 @@ public class BlackJackManager : MonoBehaviour
                         {
                             _cardslist.MyCardsOpen();
                             _PracticeSet.SetMySelectedCard(thisCard.ID);
+                            _PracticeSet.SetMySelectedTime(nowTime,nowTrial);
                             thisCard.Clicked();
                         }
                         else if(_hostorclient == HostorClient.Client)
                         {
                             _cardslist.MyCardsOpen();
                             _PracticeSet.SetYourSelectedCard(thisCard.ID);
+                            _PracticeSet.SetYourSelectedTime(nowTime, nowTrial);
                             thisCard.Clicked();
                         }
                     }
@@ -208,7 +215,7 @@ public class BlackJackManager : MonoBehaviour
         if(nowTrial == _PracticeSet.TrialAll)
         {
             _PracticeSet.BlackJackState = PracticeSet.BlackJackStateList.Finished;
-            FinishUI.text = "Finished! \n Score:" + ReturnSum(ScoreList).ToString() + "/ 5";
+            FinishUI.text = "Finished! \n Score:" + ReturnSum(ScoreList).ToString() + "/5";
             //_blackJackRecorder.WriteResult();
             _blackJackRecorder.ExportCsv();
         }

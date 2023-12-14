@@ -11,6 +11,30 @@ public class PracticeSet: MonoBehaviourPunCallbacks
     private PhotonView _PhotonView;
     public int MySelectedCard { get; set; }
     public int YourSelectedCard { get; set; }
+    public List<float> MySelectedTime { get; set; }
+    public List<float> YourSelectedTime { get; set; }
+    public void SetMySelectedTime(float time, int trial)
+    {
+        MySelectedTime[trial] = time;
+        _PhotonView.RPC("UpdateMySelectedTimeOnAllClients", RpcTarget.Others, time,trial);
+    }
+    [PunRPC]
+    void UpdateMySelectedTimeOnAllClients(float time, int trial)
+    {
+        // ここでカードデータを再構築
+        MySelectedTime[trial] = time;
+    }
+    public void SetYourSelectedTime(float time, int trial)
+    {
+        YourSelectedTime[trial] = time;
+        _PhotonView.RPC("UpdateYourSelectedTimeOnAllClients", RpcTarget.Others, time, trial);
+    }
+    [PunRPC]
+    void UpdateYourSelectedTimeOnAllClients(float time, int trial)
+    {
+        // ここでカードデータを再構築
+        YourSelectedTime[trial] = time;
+    }
     public void SetMySelectedCard(int card)
     {
         MySelectedCard = card;
@@ -257,14 +281,14 @@ public class PracticeSet: MonoBehaviourPunCallbacks
     {
         MyCards = new List<Vector3>();
         FieldCards = new Vector3(Random.Range(1, 9), Random.Range(1, 9), Random.Range(1, 9));
-        while((FieldCards.x + FieldCards.y+ FieldCards.z) / 3 < 5 || (FieldCards.x + FieldCards.y + FieldCards.z) / 3 > 6.5f)
+        while((FieldCards.x + FieldCards.y+ FieldCards.z) / 3 < 5.4f || (FieldCards.x + FieldCards.y + FieldCards.z) / 3 > 7f)
         {
             FieldCards = new Vector3(Random.Range(1, 9), Random.Range(1, 9), Random.Range(1, 9));
         }
         for (int i = 0; i < NumberofCards; i++)
         {
             Vector3 card = new Vector3(Random.Range(1, 6), Random.Range(1, 6), Random.Range(1, 6));
-            while ((card.x + card.y + card.z) / 3 < 3 || (card.x + card.y + card.z) / 3 > 4)
+            while ((card.x + card.y + card.z) / 3 < 2.6f || (card.x + card.y + card.z) / 3 > 4.0f)
             {
                 card = new Vector3(Random.Range(1, 6), Random.Range(1, 6), Random.Range(1, 6));
             }

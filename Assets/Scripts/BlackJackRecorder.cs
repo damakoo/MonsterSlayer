@@ -16,6 +16,8 @@ public class BlackJackRecorder : MonoBehaviour
     private List<List<Vector3>> MyCardsPracticeList => _PracticeSet.MyCardsPracticeList;
     private List<Vector3> FieldCardsPracticeList => _PracticeSet.FieldCardsPracticeList;
     private int TrialAll => _PracticeSet.TrialAll;
+    private List<float> MySelectedTime => _PracticeSet.MySelectedTime;
+    private List<float> YourSelectedTime => _PracticeSet.YourSelectedTime;
 
     public void RecordResult(int mynumber, int yournumber, bool score)
     {
@@ -23,23 +25,28 @@ public class BlackJackRecorder : MonoBehaviour
         YourNumberList.Add(yournumber);
         ScoreList.Add(score);
     }
+    private string _Title;
+    private void Start()
+    {
+        _Title = "Day" + System.DateTime.Now.Day.ToString() + "_" + System.DateTime.Now.Hour.ToString() + "h_" + System.DateTime.Now.Minute.ToString() + "min_" + System.DateTime.Now.Second.ToString() + "sec";
+    }
     string WriteContent()
     {
         string Content = "";
         Content += "FieldNumber_x,FieldNumber_y,FieldNumber_z";
         for (int i = 0; i < MyCardsPracticeList[0].Count; i++) Content += ",MyCards" + (i + 1).ToString() + "_x" + ",MyCards" + (i + 1).ToString() + "_y" + ",MyCards" + (i + 1).ToString() + "_z";
-        Content += ",MyNumber,YourNumber,Score\n";
+        Content += ",MyNumber,YourNumber,MySelectedTime,YourSelectedTime,Score\n";
         for (int i = 0; i < TrialAll; i++)
         {
             Content += FieldCardsPracticeList[i].x.ToString() + "," + FieldCardsPracticeList[i].y.ToString() + "," + FieldCardsPracticeList[i].z.ToString();
             for (int j = 0; j < MyCardsPracticeList[i].Count; j++) Content += "," + MyCardsPracticeList[i][j].x.ToString() + "," + MyCardsPracticeList[i][j].y.ToString() + "," + MyCardsPracticeList[i][j].z.ToString();
-            Content += "," + MyNumberList[i].ToString() + "," + YourNumberList[i].ToString() + "," + ScoreList[i].ToString() + "\n";
+            Content += "," + MyNumberList[i].ToString() + "," + YourNumberList[i].ToString() + "," + MySelectedTime[i].ToString() + "," + YourSelectedTime[i].ToString() + "," + ScoreList[i].ToString() + "\n";
         }
         return Content;
     }
     public void ExportCsv()
     {
-        DownloadFile("result_blackjack.csv", WriteContent());
+        DownloadFile("result_monsterslayer_" + _Title + ".csv", WriteContent());
     }
 
     /*public void WriteResult()
