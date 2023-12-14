@@ -7,6 +7,8 @@ using System.Linq;
 
 public class PracticeSet: MonoBehaviourPunCallbacks
 {
+    private List<Vector3> FieldCardPotential = new List<Vector3>();
+    private List<(int, int, int)> MyCardPotential;
     BlackJackManager _BlackJackManager { get; set; }
     private PhotonView _PhotonView;
     public int MySelectedCard { get; set; }
@@ -247,12 +249,18 @@ public class PracticeSet: MonoBehaviourPunCallbacks
     }
     public void UpdateParameter()
     {
+        //GenerateFieldSet();
+        //MyCardPotential = FindCombinations(1, 4);
         for (int i = 0; i < NumberofSet; i++)
         {
             DecidingCards();
             FieldCardsPracticeList.Add(FieldCards);
             MyCardsPracticeList.Add(MyCards);
         }
+        ShareInit();
+    }
+    public void ShareInit()
+    {
         SetMyCardsPracticeList(MyCardsPracticeList);
         SetFieldCardsList(FieldCardsPracticeList);
         InitializeCard();
@@ -280,21 +288,69 @@ public class PracticeSet: MonoBehaviourPunCallbacks
     void DecideRandomCards()
     {
         MyCards = new List<Vector3>();
-        FieldCards = new Vector3(Random.Range(2, 7), Random.Range(2, 7), Random.Range(2, 7));
-        while ((FieldCards.x + FieldCards.y + FieldCards.z) != 10)// / 3 < 5.4f || (FieldCards.x + FieldCards.y + FieldCards.z) / 3 > 7f)
-        {
-            FieldCards = new Vector3(Random.Range(2, 7), Random.Range(2, 7), Random.Range(2, 7));
-        }
+        HashSet<int> cardnum = PickNumbers(4, 2);
+        List<int> sortedList = new List<int>(cardnum);
+        sortedList.Sort();
+        FieldCards = new Vector3(sortedList[0] + 2, sortedList[1] - sortedList[0] + 1, 7 - sortedList[1]);
         for (int i = 0; i < NumberofCards; i++)
         {
-            Vector3 card = new Vector3(Random.Range(1, 5), Random.Range(1, 5), Random.Range(1, 5));
-            while ((card.x + card.y + card.z) != 4)/// 3 < 2.6f || (card.x + card.y + card.z) / 3 > 4.0f)
-            {
-                card = new Vector3(Random.Range(1, 5), Random.Range(1, 5), Random.Range(1, 5));
-            }
-            MyCards.Add(card);
+            cardnum = PickNumbers(5, 2);
+            sortedList = new List<int>(cardnum);
+            sortedList.Sort();
+            MyCards.Add(new Vector3(sortedList[0] + 1, sortedList[1] - sortedList[0], 5 - sortedList[1]));
         }
         ShuffleCards();
+    }
+    List<(int, int, int)> FindCombinations(int _minnum, int _maxnum)
+    {
+        List<(int, int, int)> validCombinations = new List<(int, int, int)>();
+
+        for (int x = _minnum; x <= _maxnum; x++)
+        {
+            for (int y = _minnum; y <= _maxnum; y++)
+            {
+                for (int z = _minnum; z <= _maxnum; z++)
+                {
+                    if (x + y + z == _maxnum)
+                    {
+                        validCombinations.Add((x, y, z));
+                    }
+                }
+            }
+        }
+
+        return validCombinations;
+    }
+
+    void GenerateFieldSet()
+    {
+        List<Vector3> validCombinations = new List<Vector3>();
+
+        // 2以上6以下の整数で合計が10になる組み合わせを探す
+        for (int x = 2; x <= 6; x++)
+        {
+            for (int y = 2; y <= 6; y++)
+            {
+                for (int z = 2; z <= 6; z++)
+                {
+                    if (x + y + z == 10)
+                    {
+                        FieldCardPotential.Add(new Vector3(x, y, z));
+                    }
+                }
+            }
+        }
+
+    }
+    HashSet<int> PickNumbers(int n, int i)
+    {
+        HashSet<int> pickedNumbers = new HashSet<int>();
+        while (pickedNumbers.Count < i)
+        {
+            int randomNumber = Random.Range(0, n);
+            pickedNumbers.Add(randomNumber);
+        }
+        return pickedNumbers;
     }
     private bool CheckDoubleCard()
     {

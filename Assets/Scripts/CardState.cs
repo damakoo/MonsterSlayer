@@ -77,9 +77,9 @@ public class CardState : MonoBehaviour
 
         // 頂点を定義
         Vector3[] vertices = {
-            pos_center.InverseTransformPoint(VerticePos((int)Number.x, MyCard?5:10, pos_center.position, pos_x.position)),
-            pos_center.InverseTransformPoint(VerticePos((int)Number.y, MyCard?5:10, pos_center.position, pos_y.position)),
-            pos_center.InverseTransformPoint(VerticePos((int)Number.z, MyCard?5:10, pos_center.position, pos_z.position)),
+            pos_center.InverseTransformPoint(VerticePos((int)Number.x, MyCard?4:8, pos_center.position, pos_x.position)),
+            pos_center.InverseTransformPoint(VerticePos((int)Number.y, MyCard?4:8, pos_center.position, pos_y.position)),
+            pos_center.InverseTransformPoint(VerticePos((int)Number.z, MyCard?4:8, pos_center.position, pos_z.position)),
             // 他の頂点を追加...
         };
 
