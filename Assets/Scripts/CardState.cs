@@ -66,15 +66,15 @@ public class CardState : MonoBehaviour
     }*/
     public void HostClicked()
     {
-        thisrenderer.material.color = Color.yellow;
+        thisrenderer.material.color = new Color(0f, 0.5f, 1.0f); //Color.yellow;
     }
     public void ClientClicked()
     {
-        thisrenderer.material.color = Color.green;
+        thisrenderer.material.color = new Color(0f, 1.0f, 0f); //Color.green;
     }
     public void Clicked_deep()
     {
-        thisrenderer.material.color = new Color(0.5f, 1f, 0f); //new Color(0.8f, 0.8f, 0.0f, 1.0f);
+        thisrenderer.material.color = new Color(0.0f, 1.0f, 1.0f); //new Color(0.8f, 0.8f, 0.0f, 1.0f);
     }
     public void UnClicked()
     {
