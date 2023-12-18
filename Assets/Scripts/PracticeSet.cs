@@ -280,7 +280,7 @@ public class PracticeSet: MonoBehaviourPunCallbacks
     void DecidingCards()
     {
         DecideRandomCards();
-        while (CheckDoubleCard())
+        while (CheckDoubleCard() || CheckContainSuccess())
         {
             DecideRandomCards();
         }
@@ -304,18 +304,33 @@ public class PracticeSet: MonoBehaviourPunCallbacks
     void DecideRandomCards()
     {
         MyCards = new List<Vector3>();
-        HashSet<int> cardnum = PickNumbers(4, 2);
-        List<int> sortedList = new List<int>(cardnum);
-        sortedList.Sort();
-        FieldCards = new Vector3(sortedList[0] + 2, sortedList[1] - sortedList[0] + 1, 7 - sortedList[1]);
+        FieldCards = new Vector3(Random.Range(2, 9), Random.Range(2, 9), Random.Range(2, 9));
+        while (FieldCards.x + FieldCards.y + FieldCards.z < 17 || FieldCards.x + FieldCards.y + FieldCards.z > 21)
+        {
+            FieldCards = new Vector3(Random.Range(2, 9), Random.Range(2, 9), Random.Range(2, 9));
+        }
         for (int i = 0; i < NumberofCards; i++)
         {
-            cardnum = PickNumbers(5, 2);
-            sortedList = new List<int>(cardnum);
-            sortedList.Sort();
-            MyCards.Add(new Vector3(sortedList[0] + 1, sortedList[1] - sortedList[0], 5 - sortedList[1]));
+            Vector3 card = new Vector3(Random.Range(1, 6), Random.Range(1, 6), Random.Range(1, 6));
+            while (card.x + card.y + card.z < 8 || card.x + card.y + card.z > 12 || CalculateVariance(card) < 2.5f)
+            {
+                card = new Vector3(Random.Range(1, 6), Random.Range(1, 6), Random.Range(1, 6));
+            }
+            MyCards.Add(card);
         }
-        ShuffleCards();
+            ShuffleCards();
+    }
+    float CalculateVariance(Vector3 vector)
+    {
+        // XYZの平均値を計算
+        float mean = (vector.x + vector.y + vector.z) / 3;
+
+        // 分散を計算
+        float variance = ((vector.x - mean) * (vector.x - mean) +
+                          (vector.y - mean) * (vector.y - mean) +
+                          (vector.z - mean) * (vector.z - mean)) / 3;
+
+        return variance;
     }
     List<(int, int, int)> FindCombinations(int _minnum, int _maxnum)
     {
@@ -385,6 +400,25 @@ public class PracticeSet: MonoBehaviourPunCallbacks
 
         // 重複が見つからなければfalseを返す
         return false;
+    }
+    private bool CheckContainSuccess()
+    {
+        for (int i = 0;i<MyCards.Count;i++)
+        {
+            for (int j = i; j < MyCards.Count; j++)
+            {
+                if (CalculateResult(i,j)) return false;
+            }
+        }
+        return true;
+    }
+    private bool CalculateResult(int i, int j)
+    {
+        bool result = true;
+        if (MyCards[i].x + MyCards[j].x < FieldCards.x) result = false;
+        if (MyCards[i].y + MyCards[j].y < FieldCards.y) result = false;
+        if (MyCards[i].z + MyCards[j].z < FieldCards.z) result = false;
+        return result;
     }
     void ShuffleCards()
     {

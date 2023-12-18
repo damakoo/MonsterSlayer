@@ -199,11 +199,11 @@ public class BlackJackManager : MonoBehaviour
     }
     public void MoveToShowResult()
     {
-        if(_PracticeSet.MySelectedCard == NotSelectedNumber) _cardslist.MyCardsList[_PracticeSet.MySelectedCard].HostClicked();
-        if (_PracticeSet.YourSelectedCard == NotSelectedNumber) _cardslist.MyCardsList[_PracticeSet.YourSelectedCard].ClientClicked();
+        if(_PracticeSet.MySelectedCard != NotSelectedNumber) _cardslist.MyCardsList[_PracticeSet.MySelectedCard].HostClicked();
+        if (_PracticeSet.YourSelectedCard != NotSelectedNumber) _cardslist.MyCardsList[_PracticeSet.YourSelectedCard].ClientClicked();
         if(_PracticeSet.MySelectedCard == _PracticeSet.YourSelectedCard && _PracticeSet.MySelectedCard != NotSelectedNumber) _cardslist.MyCardsList[_PracticeSet.MySelectedCard].Clicked_deep();
 
-        _cardslist.MyResultCard.Number = ((_PracticeSet.MySelectedCard == NotSelectedNumber)? Vector3.zero:_cardslist.MyCardsList[_PracticeSet.MySelectedCard].Number) + ((_PracticeSet.YourSelectedCard == NotSelectedNumber) ? Vector3.zero : _cardslist.MyCardsList[_PracticeSet.YourSelectedCard].Number);
+        _cardslist.MyResultCard.Number = ((_PracticeSet.MySelectedCard == NotSelectedNumber) ? Vector3.zero:_cardslist.MyCardsList[_PracticeSet.MySelectedCard].Number) + ((_PracticeSet.YourSelectedCard == NotSelectedNumber) ? Vector3.zero : _cardslist.MyCardsList[_PracticeSet.YourSelectedCard].Number);
         _cardslist.MyResultCard.Open();
         Score = CalculateResult();
         _blackJackRecorder.RecordResult(_PracticeSet.MySelectedCard+1, _PracticeSet.YourSelectedCard+1, (_PracticeSet.MySelectedCard == NotSelectedNumber) ? Vector3.zero: _cardslist.MyCardsList[_PracticeSet.MySelectedCard].Number , (_PracticeSet.YourSelectedCard == NotSelectedNumber) ? Vector3.zero : _cardslist.MyCardsList[_PracticeSet.YourSelectedCard].Number,Score);
