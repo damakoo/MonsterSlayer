@@ -285,6 +285,22 @@ public class PracticeSet: MonoBehaviourPunCallbacks
             DecideRandomCards();
         }
     }
+    void DecideRandomCardsSum()
+    {
+        MyCards = new List<Vector3>();
+        HashSet<int> cardnum = PickNumbers(4, 2);
+        List<int> sortedList = new List<int>(cardnum);
+        sortedList.Sort();
+        FieldCards = new Vector3(sortedList[0] + 2, sortedList[1] - sortedList[0] + 1, 7 - sortedList[1]);
+        for (int i = 0; i < NumberofCards; i++)
+        {
+            cardnum = PickNumbers(5, 2);
+            sortedList = new List<int>(cardnum);
+            sortedList.Sort();
+            MyCards.Add(new Vector3(sortedList[0] + 1, sortedList[1] - sortedList[0], 5 - sortedList[1]));
+        }
+        ShuffleCards();
+    }
     void DecideRandomCards()
     {
         MyCards = new List<Vector3>();

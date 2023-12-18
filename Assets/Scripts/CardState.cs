@@ -60,13 +60,21 @@ public class CardState : MonoBehaviour
         FadeMesh();
     }
 
-    public void Clicked()
+    /*public void Clicked()
+    {
+        thisrenderer.material.color = Color.yellow;
+    }*/
+    public void HostClicked()
     {
         thisrenderer.material.color = Color.yellow;
     }
+    public void ClientClicked()
+    {
+        thisrenderer.material.color = Color.green;
+    }
     public void Clicked_deep()
     {
-        thisrenderer.material.color = new Color(0.8f, 0.8f, 0.0f, 1.0f);
+        thisrenderer.material.color = new Color(0.5f, 1f, 0f); //new Color(0.8f, 0.8f, 0.0f, 1.0f);
     }
     public void UnClicked()
     {
@@ -77,9 +85,9 @@ public class CardState : MonoBehaviour
 
         // 頂点を定義
         Vector3[] vertices = {
-            pos_center.InverseTransformPoint(VerticePos((int)Number.x, MyCard?4:8, pos_center.position, pos_x.position)),
-            pos_center.InverseTransformPoint(VerticePos((int)Number.y, MyCard?4:8, pos_center.position, pos_y.position)),
-            pos_center.InverseTransformPoint(VerticePos((int)Number.z, MyCard?4:8, pos_center.position, pos_z.position)),
+            pos_center.InverseTransformPoint(VerticePos((int)Number.x, MyCard?5:10, pos_center.position, pos_x.position)),
+            pos_center.InverseTransformPoint(VerticePos((int)Number.y, MyCard?5:10, pos_center.position, pos_y.position)),
+            pos_center.InverseTransformPoint(VerticePos((int)Number.z, MyCard?5:10, pos_center.position, pos_z.position)),
             // 他の頂点を追加...
         };
 

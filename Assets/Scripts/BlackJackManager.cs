@@ -17,6 +17,7 @@ public class BlackJackManager : MonoBehaviour
     [SerializeField] GameObject StartingUi;
     public PracticeSet _PracticeSet { get; set; }
     private List<bool> ScoreList = new List<bool>();
+    private int NotSelectedNumber = 100;
 
     public enum HostorClient
     {
@@ -143,14 +144,14 @@ public class BlackJackManager : MonoBehaviour
                             _cardslist.MyCardsOpen();
                             _PracticeSet.SetMySelectedCard(thisCard.ID);
                             _PracticeSet.SetMySelectedTime(nowTime,nowTrial);
-                            thisCard.Clicked();
+                            thisCard.HostClicked();
                         }
                         else if(_hostorclient == HostorClient.Client)
                         {
                             _cardslist.MyCardsOpen();
                             _PracticeSet.SetYourSelectedCard(thisCard.ID);
                             _PracticeSet.SetYourSelectedTime(nowTime, nowTrial);
-                            thisCard.Clicked();
+                            thisCard.ClientClicked();
                         }
                     }
                 }
@@ -198,14 +199,14 @@ public class BlackJackManager : MonoBehaviour
     }
     public void MoveToShowResult()
     {
-        _cardslist.MyCardsList[_PracticeSet.MySelectedCard].Clicked();
-        _cardslist.MyCardsList[_PracticeSet.YourSelectedCard].Clicked();
-        if(_PracticeSet.MySelectedCard == _PracticeSet.YourSelectedCard) _cardslist.MyCardsList[_PracticeSet.MySelectedCard].Clicked_deep();
+        if(_PracticeSet.MySelectedCard == NotSelectedNumber) _cardslist.MyCardsList[_PracticeSet.MySelectedCard].HostClicked();
+        if (_PracticeSet.YourSelectedCard == NotSelectedNumber) _cardslist.MyCardsList[_PracticeSet.YourSelectedCard].ClientClicked();
+        if(_PracticeSet.MySelectedCard == _PracticeSet.YourSelectedCard && _PracticeSet.MySelectedCard != NotSelectedNumber) _cardslist.MyCardsList[_PracticeSet.MySelectedCard].Clicked_deep();
 
-        _cardslist.MyResultCard.Number = _cardslist.MyCardsList[_PracticeSet.MySelectedCard].Number + _cardslist.MyCardsList[_PracticeSet.YourSelectedCard].Number;
+        _cardslist.MyResultCard.Number = ((_PracticeSet.MySelectedCard == NotSelectedNumber)? Vector3.zero:_cardslist.MyCardsList[_PracticeSet.MySelectedCard].Number) + ((_PracticeSet.YourSelectedCard == NotSelectedNumber) ? Vector3.zero : _cardslist.MyCardsList[_PracticeSet.YourSelectedCard].Number);
         _cardslist.MyResultCard.Open();
         Score = CalculateResult();
-        _blackJackRecorder.RecordResult(_PracticeSet.MySelectedCard+1, _PracticeSet.YourSelectedCard+1, Score);
+        _blackJackRecorder.RecordResult(_PracticeSet.MySelectedCard+1, _PracticeSet.YourSelectedCard+1, (_PracticeSet.MySelectedCard == NotSelectedNumber) ? Vector3.zero: _cardslist.MyCardsList[_PracticeSet.MySelectedCard].Number , (_PracticeSet.YourSelectedCard == NotSelectedNumber) ? Vector3.zero : _cardslist.MyCardsList[_PracticeSet.YourSelectedCard].Number,Score);
         _PracticeSet.BlackJackState = PracticeSet.BlackJackStateList.ShowResult;
         MyScoreUI.text = Score?"Win!":"Lose!";
         ScoreList.Add(Score);
@@ -232,8 +233,8 @@ public class BlackJackManager : MonoBehaviour
         _cardslist.SetCards(_nowTrial);
         MyScoreUI.text = "";
         //YourScoreUI.text = "";
-        _PracticeSet.MySelectedCard = 0;
-        _PracticeSet.YourSelectedCard = 0;
+        _PracticeSet.MySelectedCard = NotSelectedNumber;
+        _PracticeSet.YourSelectedCard = NotSelectedNumber;
     }
     public void PhotonMoveToWaitForNextTrial(int _nowTrial)
     {

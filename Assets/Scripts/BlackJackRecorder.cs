@@ -12,6 +12,8 @@ public class BlackJackRecorder : MonoBehaviour
     private PracticeSet _PracticeSet => _BlackJackManager._PracticeSet;
     public List<int> MyNumberList { get; set; } = new List<int>();
     public List<int> YourNumberList { get; set; } = new List<int>();
+    public List<Vector3> MySelectedNumberList { get; set; } = new List<Vector3>();
+    public List<Vector3> YourSelectedNumberList { get; set; } = new List<Vector3>();
     public List<bool> ScoreList { get; set; } = new List<bool>();
     private List<List<Vector3>> MyCardsPracticeList => _PracticeSet.MyCardsPracticeList;
     private List<Vector3> FieldCardsPracticeList => _PracticeSet.FieldCardsPracticeList;
@@ -19,28 +21,30 @@ public class BlackJackRecorder : MonoBehaviour
     private List<float> MySelectedTime => _PracticeSet.MySelectedTime;
     private List<float> YourSelectedTime => _PracticeSet.YourSelectedTime;
 
-    public void RecordResult(int mynumber, int yournumber, bool score)
+    public void RecordResult(int mynumber, int yournumber, Vector3 myselectednumber, Vector3 yourselectednumber, bool score)
     {
         MyNumberList.Add(mynumber);
         YourNumberList.Add(yournumber);
+        MySelectedNumberList.Add(myselectednumber);
+        YourSelectedNumberList.Add(yourselectednumber);
         ScoreList.Add(score);
     }
     private string _Title;
     private void Start()
     {
-        _Title = "Day" + System.DateTime.Now.Day.ToString() + "_" + System.DateTime.Now.Hour.ToString() + "h_" + System.DateTime.Now.Minute.ToString() + "min_" + System.DateTime.Now.Second.ToString() + "sec";
+        _Title = "Day" + System.DateTime.Now.Day.ToString() + "_" + ((System.DateTime.Now.Hour < 10) ? ("0"+ System.DateTime.Now.Hour.ToString()): System.DateTime.Now.Hour.ToString()) + "h_" + ((System.DateTime.Now.Minute < 10) ? ("0" + System.DateTime.Now.Minute.ToString()) : System.DateTime.Now.Minute.ToString()) + "min_" + ((System.DateTime.Now.Second < 10) ? ("0" + System.DateTime.Now.Second.ToString()) : System.DateTime.Now.Second.ToString()) + "sec";
     }
     string WriteContent()
     {
         string Content = "";
         Content += "FieldNumber_x,FieldNumber_y,FieldNumber_z";
         for (int i = 0; i < MyCardsPracticeList[0].Count; i++) Content += ",MyCards" + (i + 1).ToString() + "_x" + ",MyCards" + (i + 1).ToString() + "_y" + ",MyCards" + (i + 1).ToString() + "_z";
-        Content += ",MyNumber,YourNumber,MySelectedTime,YourSelectedTime,Score\n";
+        Content += ",MyNumber,YourNumber,MySelectedNumber_x,MySelectedNumber_y,MySelectedNumber_z,YourSelectedNumber_x,YourSelectedNumber_y,YourSelectedNumber_z,MySelectedTime,YourSelectedTime,Score\n";
         for (int i = 0; i < TrialAll; i++)
         {
             Content += FieldCardsPracticeList[i].x.ToString() + "," + FieldCardsPracticeList[i].y.ToString() + "," + FieldCardsPracticeList[i].z.ToString();
             for (int j = 0; j < MyCardsPracticeList[i].Count; j++) Content += "," + MyCardsPracticeList[i][j].x.ToString() + "," + MyCardsPracticeList[i][j].y.ToString() + "," + MyCardsPracticeList[i][j].z.ToString();
-            Content += "," + MyNumberList[i].ToString() + "," + YourNumberList[i].ToString() + "," + MySelectedTime[i].ToString() + "," + YourSelectedTime[i].ToString() + "," + ScoreList[i].ToString() + "\n";
+            Content += "," + MyNumberList[i].ToString() + "," + YourNumberList[i].ToString() + "," + MySelectedNumberList[i].x.ToString() + "," + MySelectedNumberList[i].y.ToString() + "," + MySelectedNumberList[i].z.ToString() + "," + YourSelectedNumberList[i].x.ToString() + "," + YourSelectedNumberList[i].y.ToString() + "," + YourSelectedNumberList[i].z.ToString() + "," + MySelectedTime[i].ToString() + "," + YourSelectedTime[i].ToString() + "," + ScoreList[i].ToString() + "\n";
         }
         return Content;
     }
