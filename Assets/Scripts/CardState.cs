@@ -66,7 +66,7 @@ public class CardState : MonoBehaviour
     }*/
     public void HostClicked()
     {
-        thisrenderer.material.color = new Color(0f, 0.5f, 1.0f); //Color.yellow;
+        thisrenderer.material.color = new Color(0f, 1.0f, 0.9f); //Color.yellow;
     }
     public void ClientClicked()
     {
@@ -74,7 +74,7 @@ public class CardState : MonoBehaviour
     }
     public void Clicked_deep()
     {
-        thisrenderer.material.color = new Color(0.0f, 1.0f, 1.0f); //new Color(0.8f, 0.8f, 0.0f, 1.0f);
+        thisrenderer.material.color = new Color(0.0f, 0.6f, 0.5f); //new Color(0.8f, 0.8f, 0.0f, 1.0f);
     }
     public void UnClicked()
     {

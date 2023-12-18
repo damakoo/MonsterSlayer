@@ -312,7 +312,7 @@ public class PracticeSet: MonoBehaviourPunCallbacks
         for (int i = 0; i < NumberofCards; i++)
         {
             Vector3 card = new Vector3(Random.Range(1, 6), Random.Range(1, 6), Random.Range(1, 6));
-            while (card.x + card.y + card.z < 8 || card.x + card.y + card.z > 12 || CalculateVariance(card) < 2.5f)
+            while (card.x + card.y + card.z < 8 || card.x + card.y + card.z > 12 || CalculateVariance(card) < 1.3f)
             {
                 card = new Vector3(Random.Range(1, 6), Random.Range(1, 6), Random.Range(1, 6));
             }
