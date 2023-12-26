@@ -403,11 +403,27 @@ public class PracticeSet: MonoBehaviourPunCallbacks
     }
     private bool CheckContainSuccess()
     {
-        for (int i = 0;i<MyCards.Count;i++)
+        for (int i = 0; i < MyCards.Count; i++)
+        {
+            if (CalculateResult(i, i)) return true;
+        }
+
+        for (int i = 0; i < MyCards.Count - 1; i++)
+        {
+            for (int j = i + 1; j < MyCards.Count; j++)
+            {
+                if (CalculateResult(i, j)) return false;
+            }
+        }
+        return true;
+    }
+    private bool CheckContainSuccess_before()
+    {
+        for (int i = 0; i < MyCards.Count; i++)
         {
             for (int j = i; j < MyCards.Count; j++)
             {
-                if (CalculateResult(i,j)) return false;
+                if (CalculateResult(i, j)) return false;
             }
         }
         return true;
