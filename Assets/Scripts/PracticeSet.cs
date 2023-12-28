@@ -280,7 +280,7 @@ public class PracticeSet: MonoBehaviourPunCallbacks
     void DecidingCards()
     {
         DecideRandomCards();
-        while (CheckDoubleCard() || CheckContainSuccess())
+        while (CheckDoubleCard() || CheckContainSuccess())// || CheckContainAnotherPair())
         {
             DecideRandomCards();
         }
@@ -403,11 +403,6 @@ public class PracticeSet: MonoBehaviourPunCallbacks
     }
     private bool CheckContainSuccess()
     {
-        for (int i = 0; i < MyCards.Count; i++)
-        {
-            if (CalculateResult(i, i)) return true;
-        }
-
         for (int i = 0; i < MyCards.Count - 1; i++)
         {
             for (int j = i + 1; j < MyCards.Count; j++)
@@ -417,16 +412,13 @@ public class PracticeSet: MonoBehaviourPunCallbacks
         }
         return true;
     }
-    private bool CheckContainSuccess_before()
+    private bool CheckContainAnotherPair()
     {
         for (int i = 0; i < MyCards.Count; i++)
         {
-            for (int j = i; j < MyCards.Count; j++)
-            {
-                if (CalculateResult(i, j)) return false;
-            }
+            if (CalculateResult(i, i)) return true;
         }
-        return true;
+        return false;
     }
     private bool CalculateResult(int i, int j)
     {
