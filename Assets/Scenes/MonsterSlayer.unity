@@ -875,7 +875,7 @@ MonoBehaviour:
   _cardslist: {fileID: 603039267}
   TimeLimit: 5
   ShowMyCardsTime: 5
-  ResultsTime: 8
+  ResultsTime: 7
   WaitingTime: 3
   FinishUI: {fileID: 1642538915}
   _blackJackRecorder: {fileID: 670548090}
