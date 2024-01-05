@@ -23,7 +23,6 @@ public class DecideHostorClient : MonoBehaviour
 
             if (hit)
             {
-
                 if (hit.collider.gameObject.name == "Host")
                 {
                     _BlackJackManager._hostorclient = BlackJackManager.HostorClient.Host;
@@ -68,6 +67,10 @@ public class DecideHostorClient : MonoBehaviour
                         {
                             _BlackJackManager.UpdateParameter();
                             _BlackJackManager.GameStartUI();
+                        }
+                        else if (_BlackJackManager._hostorclient == BlackJackManager.HostorClient.Client)
+                        {
+                            _BlackJackManager.SetClientUI(true);
                         }
                         this.gameObject.SetActive(false);
                     }

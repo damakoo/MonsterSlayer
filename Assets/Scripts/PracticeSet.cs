@@ -3,10 +3,15 @@ using UnityEngine;
 using Photon.Pun;
 using System.Text.RegularExpressions;
 using System.Linq;
+using System.IO;
+using UnityEngine.Networking;
+using System.Collections;
+using System;
 
 
 public class PracticeSet: MonoBehaviourPunCallbacks
 {
+    private string filename = "PracticeSet";
     private List<Vector3> FieldCardPotential = new List<Vector3>();
     private List<(int, int, int)> MyCardPotential;
     BlackJackManager _BlackJackManager { get; set; }
@@ -60,7 +65,7 @@ public class PracticeSet: MonoBehaviourPunCallbacks
         YourSelectedCard = _Number;
     }
     public List<List<Vector3>> MyCardsPracticeList { get; set; } = new List<List<Vector3>>();
-    public List<Vector3> FieldCardsPracticeList /*{ get; set; }*/ = new List<Vector3>();
+    public List<Vector3> FieldCardsPracticeList { get; set; } = new List<Vector3>();
     public void SetMyCardsPracticeList(List<List<Vector3>> _MyCardsPracticeList)
     {
         List<List<Vector3>> temp = _MyCardsPracticeList;
@@ -187,8 +192,6 @@ public class PracticeSet: MonoBehaviourPunCallbacks
 
         return vectorList;
     }
-
-
     [System.Serializable]
     private class SerializationWrapper<T>
     {
@@ -198,9 +201,7 @@ public class PracticeSet: MonoBehaviourPunCallbacks
         {
             this.data = data;
         }
-    }
-
-    
+    }    
     public enum BlackJackStateList
     {
         BeforeStart,
@@ -236,8 +237,19 @@ public class PracticeSet: MonoBehaviourPunCallbacks
 
     public int TrialAll;
     public int NumberofCards = 5;
-
-
+    public void SetTrialAll(int trial)
+    {
+        TrialAll = trial;
+        NumberofSet = trial;
+        _PhotonView.RPC("UpdateTrialAll", RpcTarget.Others, trial);
+    }
+    [PunRPC]
+    void UpdateTrialAll(int trial)
+    {
+        // ここでカードデータを再構築
+        TrialAll = trial;
+        NumberofSet = trial;
+    }
     public int NumberofSet = 5;
     Vector3 FieldCards = Vector3.zero;
 
@@ -251,16 +263,18 @@ public class PracticeSet: MonoBehaviourPunCallbacks
     {
         //GenerateFieldSet();
         //MyCardPotential = FindCombinations(1, 4);
-        for (int i = 0; i < NumberofSet; i++)
-        {
-            DecidingCards();
-            FieldCardsPracticeList.Add(FieldCards);
-            MyCardsPracticeList.Add(MyCards);
-        }
-        ShareInit();
+        //for (int i = 0; i < NumberofSet; i++)
+        //{
+
+        string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, filename+".csv");
+        StartCoroutine(DecidingCards(filePath));
+            //FieldCardsPracticeList.Add(FieldCards);
+            //MyCardsPracticeList.Add(MyCards);
+        //}
     }
     public void ShareInit()
     {
+        SetTrialAll(TrialAll);
         SetMyCardsPracticeList(MyCardsPracticeList);
         SetFieldCardsList(FieldCardsPracticeList);
         InitializeCard();
@@ -277,13 +291,64 @@ public class PracticeSet: MonoBehaviourPunCallbacks
         _BlackJackManager.InitializeCard();
     }
 
-    void DecidingCards()
+    IEnumerator DecidingCards(string _filepath)
     {
-        DecideRandomCards();
+        using (UnityWebRequest www = UnityWebRequest.Get(_filepath))
+        {
+            yield return www.SendWebRequest();
+
+            if (www.isNetworkError || www.isHttpError)
+            {
+                Debug.LogError("Error: " + www.error);
+            }
+            else
+            {
+                // 成功した場合、結果を処理します
+                string content = www.downloadHandler.text;
+                string[] lines = content.Split('\n');
+                TrialAll = lines.Length - 1;
+
+                for (int i = 1; i < lines.Length; i++)
+                {
+                    string[] cells = lines[i].Split(',');
+                    Console.WriteLine(lines[i]);
+                    if (!string.IsNullOrWhiteSpace(lines[i]))
+                    {
+                        // FieldNumber
+                        Vector3 fieldNumber = new Vector3(
+                            float.Parse(cells[0]),
+                            float.Parse(cells[1]),
+                            float.Parse(cells[2])
+                        );
+                        FieldCardsPracticeList.Add(fieldNumber);
+
+                        // MyCards
+                        List<Vector3> cardList = new List<Vector3>();
+                        for (int j = 3; j <= 17; j += 3)
+                        {
+                            Vector3 card = new Vector3(
+                                float.Parse(cells[j]),
+                                float.Parse(cells[j + 1]),
+                                float.Parse(cells[j + 2])
+                            );
+                            cardList.Add(card);
+                        }
+                        MyCardsPracticeList.Add(cardList);
+                    }
+                    else
+                    {
+                        TrialAll -= 1;
+                    }
+
+                }
+                ShareInit();
+            }
+        }        
+        /*DecideRandomCards();
         while (CheckDoubleCard() || CheckContainSuccess())// || CheckContainAnotherPair())
         {
             DecideRandomCards();
-        }
+        }*/
     }
     void DecideRandomCardsSum()
     {
@@ -304,17 +369,17 @@ public class PracticeSet: MonoBehaviourPunCallbacks
     void DecideRandomCards()
     {
         MyCards = new List<Vector3>();
-        FieldCards = new Vector3(Random.Range(2, 9), Random.Range(2, 9), Random.Range(2, 9));
+        FieldCards = new Vector3(UnityEngine.Random.Range(2, 9), UnityEngine.Random.Range(2, 9), UnityEngine.Random.Range(2, 9));
         while (FieldCards.x + FieldCards.y + FieldCards.z < 17 || FieldCards.x + FieldCards.y + FieldCards.z > 21)
         {
-            FieldCards = new Vector3(Random.Range(2, 9), Random.Range(2, 9), Random.Range(2, 9));
+            FieldCards = new Vector3(UnityEngine.Random.Range(2, 9), UnityEngine.Random.Range(2, 9), UnityEngine.Random.Range(2, 9));
         }
         for (int i = 0; i < NumberofCards; i++)
         {
-            Vector3 card = new Vector3(Random.Range(1, 6), Random.Range(1, 6), Random.Range(1, 6));
+            Vector3 card = new Vector3(UnityEngine.Random.Range(1, 6), UnityEngine.Random.Range(1, 6), UnityEngine.Random.Range(1, 6));
             while (card.x + card.y + card.z < 8 || card.x + card.y + card.z > 12 || CalculateVariance(card) < 1.3f)
             {
-                card = new Vector3(Random.Range(1, 6), Random.Range(1, 6), Random.Range(1, 6));
+                card = new Vector3(UnityEngine.Random.Range(1, 6), UnityEngine.Random.Range(1, 6), UnityEngine.Random.Range(1, 6));
             }
             MyCards.Add(card);
         }
@@ -378,7 +443,7 @@ public class PracticeSet: MonoBehaviourPunCallbacks
         HashSet<int> pickedNumbers = new HashSet<int>();
         while (pickedNumbers.Count < i)
         {
-            int randomNumber = Random.Range(0, n);
+            int randomNumber = UnityEngine.Random.Range(0, n);
             pickedNumbers.Add(randomNumber);
         }
         return pickedNumbers;

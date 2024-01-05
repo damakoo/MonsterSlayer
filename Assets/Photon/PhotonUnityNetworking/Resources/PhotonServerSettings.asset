@@ -57,6 +57,7 @@ MonoBehaviour:
   - UpdateYourCardsSuitPracticeListOnAllClients
   - UpdateMySelectedTimeOnAllClients
   - UpdateYourSelectedTimeOnAllClients
+  - UpdateTrialAll
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
