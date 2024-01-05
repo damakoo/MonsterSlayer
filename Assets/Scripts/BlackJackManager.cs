@@ -15,6 +15,7 @@ public class BlackJackManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI MyScoreUI;
     [SerializeField] DecideHostorClient _decideHostorClient;
     [SerializeField] GameObject StartingUi;
+    [SerializeField] GameObject ClientUi;
     public PracticeSet _PracticeSet { get; set; }
     private List<bool> ScoreList = new List<bool>();
     private int NotSelectedNumber = 100;
@@ -235,6 +236,7 @@ public class BlackJackManager : MonoBehaviour
         //YourScoreUI.text = "";
         _PracticeSet.MySelectedCard = NotSelectedNumber;
         _PracticeSet.YourSelectedCard = NotSelectedNumber;
+        SetClientUI(false);
     }
     public void PhotonMoveToWaitForNextTrial(int _nowTrial)
     {
@@ -272,5 +274,9 @@ public class BlackJackManager : MonoBehaviour
             if(element) result += 1;
         }
         return result;
+    }
+    public void SetClientUI(bool setactive)
+    {
+        ClientUi.SetActive(setactive);
     }
 }
