@@ -267,6 +267,7 @@ public class PracticeSet: MonoBehaviourPunCallbacks
         //{
 
         string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, filename+".csv");
+        Console.WriteLine(filePath);
         StartCoroutine(DecidingCards(filePath));
             //FieldCardsPracticeList.Add(FieldCards);
             //MyCardsPracticeList.Add(MyCards);
@@ -293,6 +294,7 @@ public class PracticeSet: MonoBehaviourPunCallbacks
 
     IEnumerator DecidingCards(string _filepath)
     {
+        Console.WriteLine(_filepath);
         using (UnityWebRequest www = UnityWebRequest.Get(_filepath))
         {
             yield return www.SendWebRequest();
