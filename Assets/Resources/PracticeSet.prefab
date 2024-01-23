@@ -48,7 +48,7 @@ MonoBehaviour:
   FieldCardsPracticeList: []
   BlackJackState: 0
   TrialAll: 5
-  NumberofCards: 5
+  NumberofCards: 6
   NumberofSet: 5
 --- !u!114 &2385453104751281697
 MonoBehaviour:

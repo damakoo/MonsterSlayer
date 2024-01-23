@@ -309,7 +309,7 @@ public class PracticeSet: MonoBehaviourPunCallbacks
         {
             FieldCards = new Vector3(Random.Range(2, 9), Random.Range(2, 9), Random.Range(2, 9));
         }
-        for (int i = 0; i < NumberofCards; i++)
+        /*for (int i = 0; i < NumberofCards; i++)
         {
             Vector3 card = new Vector3(Random.Range(1, 6), Random.Range(1, 6), Random.Range(1, 6));
             while (card.x + card.y + card.z < 8 || card.x + card.y + card.z > 12 || CalculateVariance(card) < 1.3f)
@@ -318,7 +318,13 @@ public class PracticeSet: MonoBehaviourPunCallbacks
             }
             MyCards.Add(card);
         }
-            ShuffleCards();
+            ShuffleCards();*/
+        MyCards.Add(new Vector3(1, 3, 5));
+        MyCards.Add(new Vector3(3, 5, 1));
+        MyCards.Add(new Vector3(5, 1, 3));
+        MyCards.Add(new Vector3(4, 3, 2));
+        MyCards.Add(new Vector3(3, 2, 4));
+        MyCards.Add(new Vector3(2, 4, 3));
     }
     float CalculateVariance(Vector3 vector)
     {

@@ -182,7 +182,7 @@ public class BlackJackManager : MonoBehaviour
 
     public void MoveToShowMyCards()
     {
-        _cardslist.FieldCardsOpen();
+        _cardslist.AllOpen();
         _PracticeSet.BlackJackState = PracticeSet.BlackJackStateList.ShowMyCards;
     }
     public void PhotonMoveToShowMyCards()
@@ -191,7 +191,7 @@ public class BlackJackManager : MonoBehaviour
     }
     public void MoveToSelectCards()
     {
-        _cardslist.AllOpen();
+        _cardslist.FieldCardsOpen();
         _PracticeSet.BlackJackState = PracticeSet.BlackJackStateList.SelectCards;
     }
     public void PhotonMoveToSelectCards()
