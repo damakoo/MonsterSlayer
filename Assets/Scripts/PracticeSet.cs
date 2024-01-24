@@ -304,10 +304,10 @@ public class PracticeSet: MonoBehaviourPunCallbacks
     void DecideRandomCards()
     {
         MyCards = new List<Vector3>();
-        FieldCards = new Vector3(Random.Range(2, 9), Random.Range(2, 9), Random.Range(2, 9));
-        while (FieldCards.x + FieldCards.y + FieldCards.z < 17 || FieldCards.x + FieldCards.y + FieldCards.z > 21)
+        FieldCards = new Vector3(Random.Range(2, 10), Random.Range(2, 10), Random.Range(2, 10));
+        while (FieldCards.x + FieldCards.y + FieldCards.z < 15 || FieldCards.x + FieldCards.y + FieldCards.z > 21)
         {
-            FieldCards = new Vector3(Random.Range(2, 9), Random.Range(2, 9), Random.Range(2, 9));
+            FieldCards = new Vector3(Random.Range(2, 10), Random.Range(2, 10), Random.Range(2, 10));
         }
         /*for (int i = 0; i < NumberofCards; i++)
         {
@@ -319,12 +319,15 @@ public class PracticeSet: MonoBehaviourPunCallbacks
             MyCards.Add(card);
         }
             ShuffleCards();*/
-        MyCards.Add(new Vector3(1, 3, 5));
-        MyCards.Add(new Vector3(3, 5, 1));
+        MyCards.Add(new Vector3(5, 3, 1));
         MyCards.Add(new Vector3(5, 1, 3));
-        MyCards.Add(new Vector3(4, 3, 2));
-        MyCards.Add(new Vector3(3, 2, 4));
-        MyCards.Add(new Vector3(2, 4, 3));
+        MyCards.Add(new Vector3(3, 5, 1));
+        MyCards.Add(new Vector3(1, 5, 3));
+        MyCards.Add(new Vector3(3, 1, 5));
+        MyCards.Add(new Vector3(1, 3, 5));
+        //MyCards.Add(new Vector3(4, 3, 2));
+        //MyCards.Add(new Vector3(3, 2, 4));
+        //MyCards.Add(new Vector3(2, 4, 3));
     }
     float CalculateVariance(Vector3 vector)
     {
