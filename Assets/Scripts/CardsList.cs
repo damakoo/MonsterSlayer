@@ -45,7 +45,7 @@ public class CardsList : MonoBehaviour
         myresultcard.transform.localScale = new Vector3(currentScale.x * 2, currentScale.y * 2, currentScale.z);
         _PracticeSet.MySelectedTime = new List<float>();
         _PracticeSet.YourSelectedTime = new List<float>();
-        for(int i = 0; i < _PracticeSet.NumberofSet; i++)
+        for (int i = 0; i < _PracticeSet.NumberofSet; i++)
         {
             _PracticeSet.MySelectedTime.Add(0);
             _PracticeSet.YourSelectedTime.Add(0);

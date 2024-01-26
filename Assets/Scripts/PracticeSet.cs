@@ -15,6 +15,30 @@ public class PracticeSet: MonoBehaviourPunCallbacks
     public int YourSelectedCard { get; set; }
     public List<float> MySelectedTime { get; set; }
     public List<float> YourSelectedTime { get; set; }
+    public int MySelectedBet { get; set; }
+    public int YourSelectedBet { get; set; }
+    public void SetMySelectedBet(int bet)
+    {
+        MySelectedBet = bet;
+        _PhotonView.RPC("UpdateMySelectedBetOnAllClients", RpcTarget.Others, bet);
+    }
+    [PunRPC]
+    void UpdateMySelectedBetOnAllClients(int bet)
+    {
+        // ここでカードデータを再構築
+        MySelectedBet = bet;
+    }
+    public void SetYourSelectedBet(int bet)
+    {
+        YourSelectedBet = bet;
+        _PhotonView.RPC("UpdateYourSelectedBetOnAllClients", RpcTarget.Others, bet);
+    }
+    [PunRPC]
+    void UpdateYourSelectedBetOnAllClients(int bet)
+    {
+        // ここでカードデータを再構築
+        YourSelectedBet = bet;
+    }
     public void SetMySelectedTime(float time, int trial)
     {
         MySelectedTime[trial] = time;
@@ -207,6 +231,7 @@ public class PracticeSet: MonoBehaviourPunCallbacks
         WaitForNextTrial,
         ShowMyCards,
         SelectCards,
+        SelectBet,
         ShowResult,
         Finished,
     }
@@ -482,6 +507,17 @@ public class PracticeSet: MonoBehaviourPunCallbacks
     {
         // ここでカードデータを再構築
         _BlackJackManager.MoveToSelectCards();
+    }
+    public void MoveToSelectBet()
+    {
+        _BlackJackManager.MoveToSelectBet();
+        _PhotonView.RPC("RPCMoveToSelectBet", RpcTarget.Others);
+    }
+    [PunRPC]
+    void RPCMoveToSelectBet()
+    {
+        // ここでカードデータを再構築
+        _BlackJackManager.MoveToSelectBet();
     }
     public void MoveToShowResult()
     {

@@ -14,19 +14,29 @@ public class BlackJackRecorder : MonoBehaviour
     public List<int> YourNumberList { get; set; } = new List<int>();
     public List<Vector3> MySelectedNumberList { get; set; } = new List<Vector3>();
     public List<Vector3> YourSelectedNumberList { get; set; } = new List<Vector3>();
+    public List<int> MySelectedBetList { get; set; } = new List<int>();
+    public List<int> YourSelectedBetList { get; set; } = new List<int>();
     public List<bool> ScoreList { get; set; } = new List<bool>();
+    public List<int> MyScorePointList { get; set; } = new List<int>();
+    public List<int> YourScorePointList { get; set; } = new List<int>();
+    public List<int> ScorePointList { get; set; } = new List<int>();
     private List<List<Vector3>> MyCardsPracticeList => _PracticeSet.MyCardsPracticeList;
     private List<Vector3> FieldCardsPracticeList => _PracticeSet.FieldCardsPracticeList;
     private int TrialAll => _PracticeSet.TrialAll;
     private List<float> MySelectedTime => _PracticeSet.MySelectedTime;
     private List<float> YourSelectedTime => _PracticeSet.YourSelectedTime;
 
-    public void RecordResult(int mynumber, int yournumber, Vector3 myselectednumber, Vector3 yourselectednumber, bool score)
+    public void RecordResult(int mynumber, int yournumber, Vector3 myselectednumber, Vector3 yourselectednumber, int mybet, int yourbet, bool score, int myscorepoint, int yourscorepoint)
     {
         MyNumberList.Add(mynumber);
         YourNumberList.Add(yournumber);
         MySelectedNumberList.Add(myselectednumber);
         YourSelectedNumberList.Add(yourselectednumber);
+        MySelectedBetList.Add(mybet);
+        YourSelectedBetList.Add(yourbet);
+        MyScorePointList.Add(myscorepoint);
+        YourScorePointList.Add(yourscorepoint);
+        ScorePointList.Add(myscorepoint + yourscorepoint);
         ScoreList.Add(score);
     }
     private string _Title;
@@ -39,12 +49,12 @@ public class BlackJackRecorder : MonoBehaviour
         string Content = "";
         Content += "FieldNumber_x,FieldNumber_y,FieldNumber_z";
         for (int i = 0; i < MyCardsPracticeList[0].Count; i++) Content += ",MyCards" + (i + 1).ToString() + "_x" + ",MyCards" + (i + 1).ToString() + "_y" + ",MyCards" + (i + 1).ToString() + "_z";
-        Content += ",MyNumber,YourNumber,MySelectedNumber_x,MySelectedNumber_y,MySelectedNumber_z,YourSelectedNumber_x,YourSelectedNumber_y,YourSelectedNumber_z,MySelectedTime,YourSelectedTime,Score\n";
+        Content += ",MyNumber,YourNumber,MySelectedNumber_x,MySelectedNumber_y,MySelectedNumber_z,YourSelectedNumber_x,YourSelectedNumber_y,YourSelectedNumber_z,MySelectedTime,YourSelectedTime,MySelectedBet,YourSelectedBet,Score,MyScorePoint,YourScorePoint,ScorePoint\n";
         for (int i = 0; i < TrialAll; i++)
         {
             Content += FieldCardsPracticeList[i].x.ToString() + "," + FieldCardsPracticeList[i].y.ToString() + "," + FieldCardsPracticeList[i].z.ToString();
             for (int j = 0; j < MyCardsPracticeList[i].Count; j++) Content += "," + MyCardsPracticeList[i][j].x.ToString() + "," + MyCardsPracticeList[i][j].y.ToString() + "," + MyCardsPracticeList[i][j].z.ToString();
-            Content += "," + MyNumberList[i].ToString() + "," + YourNumberList[i].ToString() + "," + MySelectedNumberList[i].x.ToString() + "," + MySelectedNumberList[i].y.ToString() + "," + MySelectedNumberList[i].z.ToString() + "," + YourSelectedNumberList[i].x.ToString() + "," + YourSelectedNumberList[i].y.ToString() + "," + YourSelectedNumberList[i].z.ToString() + "," + MySelectedTime[i].ToString() + "," + YourSelectedTime[i].ToString() + "," + ScoreList[i].ToString() + "\n";
+            Content += "," + MyNumberList[i].ToString() + "," + YourNumberList[i].ToString() + "," + MySelectedNumberList[i].x.ToString() + "," + MySelectedNumberList[i].y.ToString() + "," + MySelectedNumberList[i].z.ToString() + "," + YourSelectedNumberList[i].x.ToString() + "," + YourSelectedNumberList[i].y.ToString() + "," + YourSelectedNumberList[i].z.ToString() + "," + MySelectedTime[i].ToString() + "," + YourSelectedTime[i].ToString() + "," + MySelectedBetList[i].ToString() + "," + YourSelectedBetList[i].ToString() + "," + ScoreList[i].ToString() + "," + MyScorePointList[i].ToString() + "," + YourScorePointList[i].ToString() + "," + ScorePointList[i].ToString() + "\n";
         }
         return Content;
     }
