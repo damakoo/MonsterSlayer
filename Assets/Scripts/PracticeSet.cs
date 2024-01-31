@@ -332,7 +332,7 @@ public class PracticeSet: MonoBehaviourPunCallbacks
         FieldCards = new Vector3(Random.Range(2, 10), Random.Range(2, 10), Random.Range(2, 10));
         while (FieldCards.x + FieldCards.y + FieldCards.z < 15 || FieldCards.x + FieldCards.y + FieldCards.z > 21)
         {
-            FieldCards = new Vector3(Random.Range(2, 10), Random.Range(2, 10), Random.Range(2, 10));
+            FieldCards = SortVector(new Vector3(Random.Range(2, 10), Random.Range(2, 10), Random.Range(2, 10)));
         }
         /*for (int i = 0; i < NumberofCards; i++)
         {
@@ -353,6 +353,14 @@ public class PracticeSet: MonoBehaviourPunCallbacks
         //MyCards.Add(new Vector3(4, 3, 2));
         //MyCards.Add(new Vector3(3, 2, 4));
         //MyCards.Add(new Vector3(2, 4, 3));
+    }
+    // この関数は外部からVector3を受け取り、並べ替えたVector3を返します
+    public Vector3 SortVector(Vector3 originalVector)
+    {
+        float[] components = new float[3] { originalVector.x, originalVector.y, originalVector.z };
+        System.Array.Sort(components);
+        System.Array.Reverse(components);
+        return new Vector3(components[0], components[1], components[2]);
     }
     float CalculateVariance(Vector3 vector)
     {
