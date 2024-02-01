@@ -25,6 +25,7 @@ public class BlackJackRecorder : MonoBehaviour
     private int TrialAll => _PracticeSet.TrialAll;
     private List<float> MySelectedTime => _PracticeSet.MySelectedTime;
     private List<float> YourSelectedTime => _PracticeSet.YourSelectedTime;
+    public int Trial = 1;
 
     public void RecordResult(int mynumber, int yournumber, Vector3 myselectednumber, Vector3 yourselectednumber, int mybet, int yourbet, bool score, int myscorepoint, int yourscorepoint)
     {
@@ -60,7 +61,7 @@ public class BlackJackRecorder : MonoBehaviour
     }
     public void ExportCsv()
     {
-        DownloadFile("result_monsterslayer_" + _Title + ".csv", WriteContent());
+        DownloadFile("result_monsterslayer_" + _Title + "_" + Trial.ToString() + ".csv", WriteContent());
     }
 
     public void Initialize()

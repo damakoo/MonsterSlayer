@@ -387,6 +387,7 @@ public class BlackJackManager : MonoBehaviour
     }
     public void Restart()
     {
+        _blackJackRecorder.Trial += 1;
         FinishUI.text = "";
         _cardslist.AllClose();
         ScoreList = new List<bool>();
