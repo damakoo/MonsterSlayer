@@ -12,7 +12,10 @@ public class DecideHostorClient : MonoBehaviour
     bool tryConnetcion = false;
     public bool isConnecting { get; set; } = false;
     public PracticeSet _practiceSet { get; set; }
-
+    private void Awake()
+    {
+        DontDestroyOnLoad(this);
+    }
     // Update is called once per frame
     void Update()
     {

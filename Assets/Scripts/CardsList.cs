@@ -8,7 +8,7 @@ public class CardsList : MonoBehaviour
 {
     [SerializeField] GameObject MonsterIcon;
     [SerializeField] BlackJackManager _blackJackManager; 
-    public List<CardState> MyCardsList;
+    public List<CardState> MyCardsList = new List<CardState>();
     public CardState MyFieldCard { get; set; }
     public CardState MyResultCard { get; set; }
     [SerializeField] GameObject CardPrefab;
@@ -25,24 +25,27 @@ public class CardsList : MonoBehaviour
     public void InitializeCards()
     {
         MonsterIcon.SetActive(true);
-        for(int i = 0; i < _PracticeSet.NumberofCards; i++)
+        if(MyCardsList.Count == 0)
         {
-            GameObject mycard = Instantiate(CardPrefab, CardPos(i, _PracticeSet.NumberofCards, MyCards_upper.position, MyCards_lower.position), Quaternion.identity, CardsListParent.transform);
-            mycard.name = "MyCard" + i.ToString();
-            CardState mycardState = mycard.AddComponent<CardState>().Initialize(mycard, true,i);
-            MyCardsList.Add(mycardState);
-        }
-        GameObject myfieldcard = Instantiate(CardPrefab, MyFieldCardtransform.position, Quaternion.identity, CardsListParent.transform);
-        myfieldcard.name = "MyFieldCard";
-        MyFieldCard = myfieldcard.AddComponent<CardState>().Initialize(myfieldcard, false, 0);
-        Vector3 currentScale = myfieldcard.transform.localScale;
-        myfieldcard.transform.localScale = new Vector3(currentScale.x * 2, currentScale.y * 2, currentScale.z);
+            for (int i = 0; i < _PracticeSet.NumberofCards; i++)
+            {
+                GameObject mycard = Instantiate(CardPrefab, CardPos(i, _PracticeSet.NumberofCards, MyCards_upper.position, MyCards_lower.position), Quaternion.identity, CardsListParent.transform);
+                mycard.name = "MyCard" + i.ToString();
+                CardState mycardState = mycard.AddComponent<CardState>().Initialize(mycard, true, i);
+                MyCardsList.Add(mycardState);
+            }
+            GameObject myfieldcard = Instantiate(CardPrefab, MyFieldCardtransform.position, Quaternion.identity, CardsListParent.transform);
+            myfieldcard.name = "MyFieldCard";
+            MyFieldCard = myfieldcard.AddComponent<CardState>().Initialize(myfieldcard, false, 0);
+            Vector3 currentScale = myfieldcard.transform.localScale;
+            myfieldcard.transform.localScale = new Vector3(currentScale.x * 2, currentScale.y * 2, currentScale.z);
 
-        GameObject myresultcard = Instantiate(CardPrefab, MyResultCardtransform.position, Quaternion.identity, CardsListParent.transform);
-        myfieldcard.name = "MyResultCard";
-        MyResultCard = myresultcard.AddComponent<CardState>().Initialize(myresultcard, false, 0);
-        currentScale = myresultcard.transform.localScale;
-        myresultcard.transform.localScale = new Vector3(currentScale.x * 2, currentScale.y * 2, currentScale.z);
+            GameObject myresultcard = Instantiate(CardPrefab, MyResultCardtransform.position, Quaternion.identity, CardsListParent.transform);
+            myfieldcard.name = "MyResultCard";
+            MyResultCard = myresultcard.AddComponent<CardState>().Initialize(myresultcard, false, 0);
+            currentScale = myresultcard.transform.localScale;
+            myresultcard.transform.localScale = new Vector3(currentScale.x * 2, currentScale.y * 2, currentScale.z);
+        }
         _PracticeSet.MySelectedTime = new List<float>();
         _PracticeSet.YourSelectedTime = new List<float>();
         for (int i = 0; i < _PracticeSet.NumberofSet; i++)
@@ -55,7 +58,6 @@ public class CardsList : MonoBehaviour
     {
         return Vector3.Lerp(start,end,(float)i/ ((float)_numberofcards-1f));
     }
-
     public void SetCards(int Trial)
     {
         for (int i = 0; i < _PracticeSet.NumberofCards; i++)
@@ -65,7 +67,6 @@ public class CardsList : MonoBehaviour
         MyFieldCard.Number = _PracticeSet.FieldCardsPracticeList[Trial];
         //YourFieldCard.Number = _PracticeSet.FieldCardsPracticeList[Trial];
     }
-
     public void AllOpen()
     {
         MyCardsOpen();
@@ -86,7 +87,6 @@ public class CardsList : MonoBehaviour
             MyCardsList[i].Open();
         }
     }
-
     public void FieldCardsOpen()
     {
         MyFieldCard.Open();

@@ -5,10 +5,9 @@ using System.Text.RegularExpressions;
 using System.Linq;
 
 
-public class PracticeSet: MonoBehaviourPunCallbacks
+public class PracticeSet : MonoBehaviourPunCallbacks
 {
     private List<Vector3> FieldCardPotential = new List<Vector3>();
-    private List<(int, int, int)> MyCardPotential;
     BlackJackManager _BlackJackManager { get; set; }
     private PhotonView _PhotonView;
     public int MySelectedCard { get; set; }
@@ -42,7 +41,7 @@ public class PracticeSet: MonoBehaviourPunCallbacks
     public void SetMySelectedTime(float time, int trial)
     {
         MySelectedTime[trial] = time;
-        _PhotonView.RPC("UpdateMySelectedTimeOnAllClients", RpcTarget.Others, time,trial);
+        _PhotonView.RPC("UpdateMySelectedTimeOnAllClients", RpcTarget.Others, time, trial);
     }
     [PunRPC]
     void UpdateMySelectedTimeOnAllClients(float time, int trial)
@@ -116,7 +115,7 @@ public class PracticeSet: MonoBehaviourPunCallbacks
         string cards_json = "";
         for (int set = 0; set < NumberofSet; set++)
         {
-            for(int card = 0;card < NumberofCards; card++)
+            for (int card = 0; card < NumberofCards; card++)
             {
                 cards_json += SerializeVector3(cards[set][card]) + ",";
             }
@@ -224,7 +223,7 @@ public class PracticeSet: MonoBehaviourPunCallbacks
         }
     }
 
-    
+
     public enum BlackJackStateList
     {
         BeforeStart,
@@ -274,6 +273,8 @@ public class PracticeSet: MonoBehaviourPunCallbacks
     }
     public void UpdateParameter()
     {
+        MyCardsPracticeList = new List<List<Vector3>>();
+        FieldCardsPracticeList = new List<Vector3>();
         //GenerateFieldSet();
         //MyCardPotential = FindCombinations(1, 4);
         for (int i = 0; i < NumberofSet; i++)
@@ -329,10 +330,12 @@ public class PracticeSet: MonoBehaviourPunCallbacks
     void DecideRandomCards()
     {
         MyCards = new List<Vector3>();
+        //FieldCards = SortVector(new Vector3(Random.Range(2, 10), Random.Range(2, 10), Random.Range(2, 10)));
         FieldCards = new Vector3(Random.Range(2, 10), Random.Range(2, 10), Random.Range(2, 10));
         while (FieldCards.x + FieldCards.y + FieldCards.z < 15 || FieldCards.x + FieldCards.y + FieldCards.z > 21)
         {
-            FieldCards = SortVector(new Vector3(Random.Range(2, 10), Random.Range(2, 10), Random.Range(2, 10)));
+            //FieldCards = SortVector(new Vector3(Random.Range(2, 10), Random.Range(2, 10), Random.Range(2, 10)));
+            FieldCards = new Vector3(Random.Range(2, 10), Random.Range(2, 10), Random.Range(2, 10));
         }
         /*for (int i = 0; i < NumberofCards; i++)
         {
@@ -504,7 +507,7 @@ public class PracticeSet: MonoBehaviourPunCallbacks
         // ここでカードデータを再構築
         _BlackJackManager.MoveToShowMyCards();
     }
-    
+
     public void MoveToSelectCards()
     {
         _BlackJackManager.MoveToSelectCards();
@@ -540,7 +543,7 @@ public class PracticeSet: MonoBehaviourPunCallbacks
     }
     public void MakeReadyHost()
     {
-       _BlackJackManager.MakeReadyHost();
+        _BlackJackManager.MakeReadyHost();
         _PhotonView.RPC("RPCMakeReadyHost", RpcTarget.Others);
     }
     [PunRPC]
@@ -559,5 +562,16 @@ public class PracticeSet: MonoBehaviourPunCallbacks
     {
         // ここでカードデータを再構築
         _BlackJackManager.MakeReadyClient();
+    }
+    public void Restart()
+    {
+        _BlackJackManager.Restart();
+        _PhotonView.RPC("RPCRestart", RpcTarget.Others);
+    }
+    [PunRPC]
+    void RPCRestart()
+    {
+        // ここでカードデータを再構築
+        _BlackJackManager.Restart();
     }
 }

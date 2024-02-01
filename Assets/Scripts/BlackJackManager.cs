@@ -20,6 +20,8 @@ public class BlackJackManager : MonoBehaviour
     [SerializeField] GameObject BetUi;
     [SerializeField] GameObject CardListObject;
     [SerializeField] GameObject MonsterIconObject;
+    [SerializeField] GameObject _SceneReloaderHost;
+    [SerializeField] GameObject _SceneReloaderClient;
     [SerializeField] List<TextMeshProUGUI> BetUiChild;
     public PracticeSet _PracticeSet { get; set; }
     private List<bool> ScoreList = new List<bool>();
@@ -304,9 +306,11 @@ public class BlackJackManager : MonoBehaviour
         if (nowTrial == _PracticeSet.TrialAll)
         {
             _PracticeSet.BlackJackState = PracticeSet.BlackJackStateList.Finished;
-            FinishUI.text = "Finished! \n Win:" + ReturnSum(ScoreList).ToString() + "/5\n" + "Point:" + (ReturnSumPoint(MyScorePointList) + ReturnSumPoint(MyScorePointList)).ToString();
+            FinishUI.text = "Finished! \n Win:" + ReturnSum(ScoreList).ToString() + "/5\n" + "Point:" + (ReturnSumPoint(MyScorePointList) + ReturnSumPoint(YourScorePointList)).ToString();
             //_blackJackRecorder.WriteResult();
             _blackJackRecorder.ExportCsv();
+            if (_hostorclient == HostorClient.Host) _SceneReloaderHost.SetActive(true);
+            if (_hostorclient == HostorClient.Client) _SceneReloaderClient.SetActive(true);
         }
     }
     public void PhotonMoveToShowResult()
@@ -374,5 +378,34 @@ public class BlackJackManager : MonoBehaviour
     public void SetClientUI(bool setactive)
     {
         ClientUi.SetActive(setactive);
+    }
+
+    public void PhotonRestart()
+    {
+        UpdateParameter();
+        _PracticeSet.Restart();
+    }
+    public void Restart()
+    {
+        FinishUI.text = "";
+        _cardslist.AllClose();
+        ScoreList = new List<bool>();
+        MyScorePointList = new List<int>();
+        YourScorePointList = new List<int>();
+        nowTrial = 0;
+        nowTime = 0;
+        _blackJackRecorder.Initialize();
+        _PracticeSet.BlackJackState = PracticeSet.BlackJackStateList.BeforeStart;
+        MyScoreUI.text = "";
+        if (_hostorclient == HostorClient.Host)
+        {
+            GameStartUI();
+            _SceneReloaderHost.SetActive(false);
+        }
+        else if(_hostorclient == HostorClient.Client)
+        {
+            SetClientUI(true);
+            _SceneReloaderClient.SetActive(false);
+        }
     }
 }

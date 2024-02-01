@@ -42,7 +42,7 @@ public class BlackJackRecorder : MonoBehaviour
     private string _Title;
     private void Start()
     {
-        _Title = "Day" + System.DateTime.Now.Day.ToString() + "_" + ((System.DateTime.Now.Hour < 10) ? ("0"+ System.DateTime.Now.Hour.ToString()): System.DateTime.Now.Hour.ToString()) + "h_" + ((System.DateTime.Now.Minute < 10) ? ("0" + System.DateTime.Now.Minute.ToString()) : System.DateTime.Now.Minute.ToString()) + "min_" + ((System.DateTime.Now.Second < 10) ? ("0" + System.DateTime.Now.Second.ToString()) : System.DateTime.Now.Second.ToString()) + "sec";
+        _Title = "Day" + System.DateTime.Now.Day.ToString() + "_" + ((System.DateTime.Now.Hour < 10) ? ("0" + System.DateTime.Now.Hour.ToString()) : System.DateTime.Now.Hour.ToString()) + "h_" + ((System.DateTime.Now.Minute < 10) ? ("0" + System.DateTime.Now.Minute.ToString()) : System.DateTime.Now.Minute.ToString()) + "min_" + ((System.DateTime.Now.Second < 10) ? ("0" + System.DateTime.Now.Second.ToString()) : System.DateTime.Now.Second.ToString()) + "sec";
     }
     string WriteContent()
     {
@@ -61,6 +61,20 @@ public class BlackJackRecorder : MonoBehaviour
     public void ExportCsv()
     {
         DownloadFile("result_monsterslayer_" + _Title + ".csv", WriteContent());
+    }
+
+    public void Initialize()
+    {
+        MyNumberList = new List<int>();
+        YourNumberList = new List<int>();
+        MySelectedNumberList = new List<Vector3>();
+        YourSelectedNumberList = new List<Vector3>();
+        MySelectedBetList = new List<int>();
+        YourSelectedBetList = new List<int>();
+        ScoreList = new List<bool>();
+        MyScorePointList = new List<int>();
+        YourScorePointList = new List<int>();
+        ScorePointList = new List<int>();
     }
 
     /*public void WriteResult()
