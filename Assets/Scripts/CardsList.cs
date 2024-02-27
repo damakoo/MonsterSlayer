@@ -54,6 +54,17 @@ public class CardsList : MonoBehaviour
             _PracticeSet.YourSelectedTime.Add(0);
         }
     }
+    public void ReInitializeCards()
+    {
+        MonsterIcon.SetActive(true);
+        _PracticeSet.MySelectedTime = new List<float>();
+        _PracticeSet.YourSelectedTime = new List<float>();
+        for (int i = 0; i < _PracticeSet.NumberofSet; i++)
+        {
+            _PracticeSet.MySelectedTime.Add(0);
+            _PracticeSet.YourSelectedTime.Add(0);
+        }
+    }
     private Vector3 CardPos(int i, int _numberofcards, Vector3 start, Vector3 end)
     {
         return Vector3.Lerp(start,end,(float)i/ ((float)_numberofcards-1f));

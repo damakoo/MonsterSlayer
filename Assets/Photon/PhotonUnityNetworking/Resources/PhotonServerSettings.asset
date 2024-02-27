@@ -61,6 +61,7 @@ MonoBehaviour:
   - UpdateYourSelectedBetOnAllClients
   - RPCMoveToSelectBet
   - RPCRestart
+  - RPCReInitializeCard
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

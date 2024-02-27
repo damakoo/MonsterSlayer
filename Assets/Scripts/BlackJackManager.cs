@@ -142,9 +142,17 @@ public class BlackJackManager : MonoBehaviour
     {
         _PracticeSet.UpdateParameter();
     }
+    public void ReUpdateParameter()
+    {
+        _PracticeSet.ReUpdateParameter();
+    }
     public void InitializeCard()
     {
         _cardslist.InitializeCards();
+    }
+    public void ReInitializeCard()
+    {
+        _cardslist.ReInitializeCards();
     }
     void BlackJacking()
     {
@@ -222,7 +230,6 @@ public class BlackJackManager : MonoBehaviour
                 }
             }
         }
-
     }
     public void GameStartUI()
     {
@@ -260,15 +267,14 @@ public class BlackJackManager : MonoBehaviour
     }
     public void MoveToSelectBet()
     {
-        _PracticeSet.MySelectedBet = 1;
-        _PracticeSet.YourSelectedBet = 1;
+        _PracticeSet.MySelectedBet = 0;
+        _PracticeSet.YourSelectedBet = 0;
         CardListObject.SetActive(false);
         MonsterIconObject.SetActive(false);
         BetUi.SetActive(true);
         foreach (TextMeshProUGUI child in BetUiChild) child.color = Color.white;
         nowTime = 0;
         _PracticeSet.BlackJackState = PracticeSet.BlackJackStateList.SelectBet;
-
     }
     public void MoveToSelectCards()
     {
@@ -383,7 +389,7 @@ public class BlackJackManager : MonoBehaviour
 
     public void PhotonRestart()
     {
-        UpdateParameter();
+        ReUpdateParameter();
         _PracticeSet.Restart();
     }
     public void Restart()

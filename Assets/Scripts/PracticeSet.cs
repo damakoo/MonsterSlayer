@@ -285,11 +285,43 @@ public class PracticeSet : MonoBehaviourPunCallbacks
         }
         ShareInit();
     }
+    public void ReUpdateParameter()
+    {
+        MyCardsPracticeList = new List<List<Vector3>>();
+        FieldCardsPracticeList = new List<Vector3>();
+        //GenerateFieldSet();
+        //MyCardPotential = FindCombinations(1, 4);
+        for (int i = 0; i < NumberofSet; i++)
+        {
+            DecidingCards();
+            FieldCardsPracticeList.Add(FieldCards);
+            MyCardsPracticeList.Add(MyCards);
+        }
+        ReShareInit();
+    }
+
     public void ShareInit()
     {
         SetMyCardsPracticeList(MyCardsPracticeList);
         SetFieldCardsList(FieldCardsPracticeList);
         InitializeCard();
+    }
+    public void ReShareInit()
+    {
+        SetMyCardsPracticeList(MyCardsPracticeList);
+        SetFieldCardsList(FieldCardsPracticeList);
+        ReInitializeCard();
+    }
+    public void ReInitializeCard()
+    {
+        _BlackJackManager.ReInitializeCard();
+        _PhotonView.RPC("RPCReInitializeCard", RpcTarget.Others);
+    }
+    [PunRPC]
+    void RPCReInitializeCard()
+    {
+        // ここでカードデータを再構築
+        _BlackJackManager.ReInitializeCard();
     }
     public void InitializeCard()
     {
