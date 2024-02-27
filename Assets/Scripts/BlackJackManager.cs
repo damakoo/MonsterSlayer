@@ -296,7 +296,8 @@ public class BlackJackManager : MonoBehaviour
         _blackJackRecorder.RecordResult(_PracticeSet.MySelectedCard + 1, _PracticeSet.YourSelectedCard + 1, (_PracticeSet.MySelectedCard == NotSelectedNumber) ? Vector3.zero : _cardslist.MyCardsList[_PracticeSet.MySelectedCard].Number, (_PracticeSet.YourSelectedCard == NotSelectedNumber) ? Vector3.zero : _cardslist.MyCardsList[_PracticeSet.YourSelectedCard].Number, _PracticeSet.MySelectedBet, _PracticeSet.YourSelectedBet, Score, MyScorePoint, YourScorePoint);
         _PracticeSet.BlackJackState = PracticeSet.BlackJackStateList.ShowResult;
         //MyScoreUI.text = (Score ? "Win!" : "Lose!") + "\nHost:" + MyScorePoint.ToString() + "\nClient:" + YourScorePoint.ToString();
-        MyScoreUI.text = (Score ? "Win!" : "Lose!") + ((_hostorclient == HostorClient.Host) ? ("\nHost:" + MyScorePoint.ToString()) : ("\nClient:" + YourScorePoint.ToString()));
+        //MyScoreUI.text = (Score ? "Win!" : "Lose!") + ((_hostorclient == HostorClient.Host) ? ("\nHost:" + MyScorePoint.ToString()) : ("\nClient:" + YourScorePoint.ToString()));
+        MyScoreUI.text = (Score ? "Win!" : "Lose!");// + ((_hostorclient == HostorClient.Host) ? ("\nHost:" + MyScorePoint.ToString()) : ("\nClient:" + YourScorePoint.ToString()));
         ScoreList.Add(Score);
         MyScorePointList.Add(MyScorePoint);
         YourScorePointList.Add(YourScorePoint);
@@ -306,7 +307,7 @@ public class BlackJackManager : MonoBehaviour
         if (nowTrial == _PracticeSet.TrialAll)
         {
             _PracticeSet.BlackJackState = PracticeSet.BlackJackStateList.Finished;
-            FinishUI.text = "Finished! \n Win:" + ReturnSum(ScoreList).ToString() + "/5\n" + "Point:" + (ReturnSumPoint(MyScorePointList) + ReturnSumPoint(YourScorePointList)).ToString();
+            FinishUI.text = "Finished! \n Win:" + ReturnSum(ScoreList).ToString() + "/5\n";// + "Point:" + (ReturnSumPoint(MyScorePointList) + ReturnSumPoint(YourScorePointList)).ToString();
             //_blackJackRecorder.WriteResult();
             _blackJackRecorder.ExportCsv();
             if (_hostorclient == HostorClient.Host) _SceneReloaderHost.SetActive(true);
