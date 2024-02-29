@@ -1198,6 +1198,7 @@ MonoBehaviour:
   MyScoreUI: {fileID: 2129073161}
   _decideHostorClient: {fileID: 329302854}
   StartingUi: {fileID: 1090798328}
+  StartingUi_button: {fileID: 1434205338}
   WaitforStartUi: {fileID: 944186588}
   ClientUi: {fileID: 2021522436}
   BetUi: {fileID: 1386265447}
