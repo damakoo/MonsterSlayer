@@ -1187,12 +1187,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _cardslist: {fileID: 603039267}
-  TaskLimitTime: 1
+  TaskLimitTime: 8
   ShowMyCardsTime: 0
-  BetTime: 1
-  ResultsTime: 1
-  WaitingTime: 1
-  NumberofSet: 2
+  BetTime: 8
+  ResultsTime: 8
+  WaitingTime: 6
+  NumberofSet: 10
   FinishUI: {fileID: 1642538915}
   _blackJackRecorder: {fileID: 670548090}
   MyScoreUI: {fileID: 2129073161}
