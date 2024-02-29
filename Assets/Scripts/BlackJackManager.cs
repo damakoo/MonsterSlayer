@@ -11,11 +11,13 @@ public class BlackJackManager : MonoBehaviour
     [SerializeField] int BetTime = 4;
     [SerializeField] int ResultsTime = 5;
     [SerializeField] int WaitingTime = 3;
+    [SerializeField] int NumberofSet = 10;
     [SerializeField] TextMeshProUGUI FinishUI;
     [SerializeField] BlackJackRecorder _blackJackRecorder;
     [SerializeField] TextMeshProUGUI MyScoreUI;
     [SerializeField] DecideHostorClient _decideHostorClient;
     [SerializeField] GameObject StartingUi;
+    [SerializeField] GameObject WaitforStartUi;
     [SerializeField] GameObject ClientUi;
     [SerializeField] GameObject BetUi;
     [SerializeField] GameObject CardListObject;
@@ -23,6 +25,11 @@ public class BlackJackManager : MonoBehaviour
     [SerializeField] GameObject _SceneReloaderHost;
     [SerializeField] GameObject _SceneReloaderClient;
     [SerializeField] List<TextMeshProUGUI> BetUiChild;
+    [SerializeField] GameObject TimeLimitObj;
+    [SerializeField] GameObject TimeLimit_Bet;
+    [SerializeField] GameObject TimeLimit_notBet;
+    [SerializeField] GameObject AllTrialFinishedUI;
+    [SerializeField] TextMeshProUGUI TimeLimitObj_str;
     public PracticeSet _PracticeSet { get; set; }
     private List<bool> ScoreList = new List<bool>();
     private List<int> MyScorePointList = new List<int>();
@@ -51,6 +58,7 @@ public class BlackJackManager : MonoBehaviour
     void Start()
     {
         FinishUI.text = "";
+        TimeLimitObj_str.text = "";
     }
 
     // Update is called once per frame
@@ -63,12 +71,19 @@ public class BlackJackManager : MonoBehaviour
                 if (_PracticeSet.BlackJackState == PracticeSet.BlackJackStateList.BeforeStart)
                 {
                     StartingGame();
+                    if (_PracticeSet.HostPressed && _PracticeSet.ClientPressed)
+                    {
+                        PhotonMoveToWaitForNextTrial(nowTrial);
+                        _PracticeSet.SetHostPressed(false);
+                        _PracticeSet.SetClientPressed(false);
+                    }
                     //if (Input.GetKeyDown(KeyCode.Space)) PhotonMoveToWaitForNextTrial(nowTrial);
                 }
                 else if (_PracticeSet.BlackJackState == PracticeSet.BlackJackStateList.WaitForNextTrial)
                 {
                     //if (Input.GetKeyDown(KeyCode.Space)) MoveToShowMyCards();
                     nowTime += Time.deltaTime;
+                    _PracticeSet.SetTimeLeft(WaitingTime - nowTime);
                     if (nowTime > WaitingTime)
                     {
                         nowTime = 0;
@@ -84,6 +99,7 @@ public class BlackJackManager : MonoBehaviour
                     else if (_HowShowCard == HowShowCard.Time)
                     {
                         nowTime += Time.deltaTime;
+                        _PracticeSet.SetTimeLeft(ShowMyCardsTime - nowTime);
                         if (nowTime > ShowMyCardsTime)
                         {
                             nowTime = 0;
@@ -95,12 +111,14 @@ public class BlackJackManager : MonoBehaviour
                 else if (_PracticeSet.BlackJackState == PracticeSet.BlackJackStateList.SelectCards)
                 {
                     nowTime += Time.deltaTime;
+                    _PracticeSet.SetTimeLeft(TaskLimitTime - nowTime);
                     BlackJacking();
                     if (nowTime > TaskLimitTime) PhotonMoveToSelectBet();
                 }
                 else if (_PracticeSet.BlackJackState == PracticeSet.BlackJackStateList.SelectBet)
                 {
                     nowTime += Time.deltaTime;
+                    _PracticeSet.SetTimeLeft(BetTime - nowTime);
                     SelectBetting();
                     if (nowTime > BetTime) PhotonMoveToShowResult();
                 }
@@ -108,12 +126,25 @@ public class BlackJackManager : MonoBehaviour
                 {
                     //if (Input.GetKeyDown(KeyCode.Space)) MoveToWaitForNextTrial();
                     nowTime += Time.deltaTime;
+                    _PracticeSet.SetTimeLeft(ResultsTime - nowTime);
                     if (nowTime > ResultsTime)
                     {
                         nowTime = 0;
                         PhotonMoveToWaitForNextTrial(nowTrial);
                     }
                 }
+                else if (_PracticeSet.BlackJackState == PracticeSet.BlackJackStateList.Finished)
+                {
+                    if (_PracticeSet.HostPressed && _PracticeSet.ClientPressed)
+                    {
+                        PhotonRestart();
+                    }
+                }
+
+            }
+            else if (_hostorclient == HostorClient.Client && _PracticeSet.BlackJackState == PracticeSet.BlackJackStateList.BeforeStart)
+            {
+                StartingGame();
             }
             else if (_hostorclient == HostorClient.Client && _PracticeSet.BlackJackState == PracticeSet.BlackJackStateList.SelectCards)
             {
@@ -128,6 +159,7 @@ public class BlackJackManager : MonoBehaviour
             {
                 nowTime = 0;
             }
+            if (_PracticeSet.BlackJackState != PracticeSet.BlackJackStateList.BeforeStart) TimeLimitObj_str.text = "Time: " + Mathf.CeilToInt(_PracticeSet.TimeLeft).ToString();
         }
     }
     public void SetPracticeSet(PracticeSet _practiceset)
@@ -235,6 +267,10 @@ public class BlackJackManager : MonoBehaviour
     {
         StartingUi.SetActive(true);
     }
+    public void PhotonGameStartUI()
+    {
+        _PracticeSet.GameStartUi();
+    }
     void StartingGame()
     {
         // �}�E�X�{�^�����N���b�N���ꂽ���m�F
@@ -246,8 +282,16 @@ public class BlackJackManager : MonoBehaviour
             // ���C�L���X�g���g�p���ăI�u�W�F�N�g�����o
             if (hit && hit.collider.gameObject.CompareTag("Start"))
             {
+                if (_hostorclient == HostorClient.Host)
+                {
+                    _PracticeSet.SetHostPressed(true);
+                }
+                else if (_hostorclient == HostorClient.Client)
+                {
+                    _PracticeSet.SetClientPressed(true);
+                }
+                WaitforStartUi.SetActive(true);
                 StartingUi.SetActive(false);
-                PhotonMoveToWaitForNextTrial(nowTrial);
             }
         }
     }
@@ -256,6 +300,7 @@ public class BlackJackManager : MonoBehaviour
     {
         _cardslist.AllOpen();
         _PracticeSet.BlackJackState = PracticeSet.BlackJackStateList.ShowMyCards;
+        TimeLimitObj.transform.position = TimeLimit_notBet.transform.position;
     }
     public void PhotonMoveToShowMyCards()
     {
@@ -275,11 +320,13 @@ public class BlackJackManager : MonoBehaviour
         foreach (TextMeshProUGUI child in BetUiChild) child.color = Color.white;
         nowTime = 0;
         _PracticeSet.BlackJackState = PracticeSet.BlackJackStateList.SelectBet;
+        TimeLimitObj.transform.position = TimeLimit_Bet.transform.position;
     }
     public void MoveToSelectCards()
     {
         _cardslist.FieldCardsOpen();
         _PracticeSet.BlackJackState = PracticeSet.BlackJackStateList.SelectCards;
+        TimeLimitObj.transform.position = TimeLimit_notBet.transform.position;
     }
     public void PhotonMoveToSelectCards()
     {
@@ -310,14 +357,22 @@ public class BlackJackManager : MonoBehaviour
         //YourScoreUI.text = Score.ToString();
         nowTime = 0;
         nowTrial += 1;
+        TimeLimitObj.transform.position = TimeLimit_notBet.transform.position;
         if (nowTrial == _PracticeSet.TrialAll)
         {
             _PracticeSet.BlackJackState = PracticeSet.BlackJackStateList.Finished;
-            FinishUI.text = "Finished! \n Win:" + ReturnSum(ScoreList).ToString() + "/5\n";// + "Point:" + (ReturnSumPoint(MyScorePointList) + ReturnSumPoint(YourScorePointList)).ToString();
+            FinishUI.text = "Finished! \n Win:" + ReturnSum(ScoreList).ToString() + "/5" + "\n" + "Trial: " + _blackJackRecorder.Trial.ToString() + "/10";// + "Point:" + (ReturnSumPoint(MyScorePointList) + ReturnSumPoint(YourScorePointList)).ToString();
             //_blackJackRecorder.WriteResult();
             _blackJackRecorder.ExportCsv();
-            if (_hostorclient == HostorClient.Host) _SceneReloaderHost.SetActive(true);
-            if (_hostorclient == HostorClient.Client) _SceneReloaderClient.SetActive(true);
+            if (_blackJackRecorder.Trial == NumberofSet)
+            {
+                AllTrialFinishedUI.SetActive(true);
+            }
+            else
+            {
+                _SceneReloaderHost.SetActive(true);
+            }
+            TimeLimitObj_str.text = "";
         }
     }
     public void PhotonMoveToShowResult()
@@ -326,6 +381,7 @@ public class BlackJackManager : MonoBehaviour
     }
     public void MoveToWaitForNextTrial(int _nowTrial)
     {
+        WaitforStartUi.SetActive(false);
         _cardslist.AllClose();
         _PracticeSet.BlackJackState = PracticeSet.BlackJackStateList.WaitForNextTrial;
         nowTrial = _nowTrial;
@@ -335,6 +391,7 @@ public class BlackJackManager : MonoBehaviour
         _PracticeSet.MySelectedCard = NotSelectedNumber;
         _PracticeSet.YourSelectedCard = NotSelectedNumber;
         SetClientUI(false);
+        TimeLimitObj.transform.position = TimeLimit_notBet.transform.position;
     }
     public void PhotonMoveToWaitForNextTrial(int _nowTrial)
     {
@@ -389,11 +446,15 @@ public class BlackJackManager : MonoBehaviour
 
     public void PhotonRestart()
     {
+        _PracticeSet.SetHostPressed(false);
+        _PracticeSet.SetClientPressed(false);
         ReUpdateParameter();
         _PracticeSet.Restart();
     }
     public void Restart()
     {
+        _SceneReloaderClient.SetActive(false);
+        TimeLimitObj_str.text = "";
         _blackJackRecorder.Trial += 1;
         FinishUI.text = "";
         _cardslist.AllClose();
@@ -405,15 +466,20 @@ public class BlackJackManager : MonoBehaviour
         _blackJackRecorder.Initialize();
         _PracticeSet.BlackJackState = PracticeSet.BlackJackStateList.BeforeStart;
         MyScoreUI.text = "";
+        GameStartUI();
+    }
+    public void PressedReload()
+    {
+        _SceneReloaderHost.SetActive(false);
         if (_hostorclient == HostorClient.Host)
         {
-            GameStartUI();
-            _SceneReloaderHost.SetActive(false);
+            _PracticeSet.SetHostPressed(true);
+            _SceneReloaderClient.SetActive(true);
         }
-        else if(_hostorclient == HostorClient.Client)
+        else if (_hostorclient == HostorClient.Client)
         {
-            SetClientUI(true);
-            _SceneReloaderClient.SetActive(false);
+            _PracticeSet.SetClientPressed(true);
+            _SceneReloaderClient.SetActive(true);
         }
     }
 }

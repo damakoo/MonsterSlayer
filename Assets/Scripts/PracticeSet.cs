@@ -16,6 +16,40 @@ public class PracticeSet : MonoBehaviourPunCallbacks
     public List<float> YourSelectedTime { get; set; }
     public int MySelectedBet { get; set; }
     public int YourSelectedBet { get; set; }
+    public float TimeLeft { get; set; } = 0;
+    public bool HostPressed { get; set; } = false;
+    public bool ClientPressed { get; set; } = false;
+    public void SetHostPressed(bool _hostpressed)
+    {
+        HostPressed = _hostpressed;
+        _PhotonView.RPC("UpdateHostPressedOnAllClients", RpcTarget.Others, _hostpressed);
+    }
+    [PunRPC]
+    void UpdateHostPressedOnAllClients(bool _hostpressed)
+    {
+        HostPressed = _hostpressed;
+    }
+    public void SetClientPressed(bool _clientpressed)
+    {
+        ClientPressed = _clientpressed;
+        _PhotonView.RPC("UpdateClientPressedOnAllClients", RpcTarget.Others, _clientpressed);
+    }
+    [PunRPC]
+    void UpdateClientPressedOnAllClients(bool _clientpressed)
+    {
+        ClientPressed = _clientpressed;
+    }
+    public void SetTimeLeft(float _timeleft)
+    {
+        TimeLeft = _timeleft;
+        _PhotonView.RPC("UpdateTimeLeftOnAllClients", RpcTarget.Others, _timeleft);
+    }
+    [PunRPC]
+    void UpdateTimeLeftOnAllClients(float _timeleft)
+    {
+        // ここでカードデータを再構築
+        TimeLeft = _timeleft;
+    }
     public void SetMySelectedBet(int bet)
     {
         MySelectedBet = bet;
@@ -271,15 +305,39 @@ public class PracticeSet : MonoBehaviourPunCallbacks
         _PhotonView = GetComponent<PhotonView>();
         _BlackJackManager = GameObject.FindWithTag("Manager").GetComponent<BlackJackManager>();
     }
+    List<int> GenerateRandomList(int min, int max)
+    {
+        List<int> result = new List<int>();
+        for (int i = min; i <= max; i++)
+        {
+            result.Add(i);
+        }
+
+        // シャッフル
+        int n = result.Count;
+        System.Random rng = new System.Random();
+        while (n > 1)
+        {
+            n--;
+            int k = rng.Next(n + 1);
+            int value = result[k];
+            result[k] = result[n];
+            result[n] = value;
+        }
+
+        return result;
+    }
     public void UpdateParameter()
     {
         MyCardsPracticeList = new List<List<Vector3>>();
         FieldCardsPracticeList = new List<Vector3>();
         //GenerateFieldSet();
         //MyCardPotential = FindCombinations(1, 4);
+        List<int> _order = GenerateRandomList(1, MonsterPattern.MonsterPatterns.Count);
         for (int i = 0; i < NumberofSet; i++)
         {
-            DecidingCards();
+            //DecidingCards();
+            ChooseDecidedCards(_order[i]-1);
             FieldCardsPracticeList.Add(FieldCards);
             MyCardsPracticeList.Add(MyCards);
         }
@@ -291,9 +349,11 @@ public class PracticeSet : MonoBehaviourPunCallbacks
         FieldCardsPracticeList = new List<Vector3>();
         //GenerateFieldSet();
         //MyCardPotential = FindCombinations(1, 4);
+        List<int> _order = GenerateRandomList(1, MonsterPattern.MonsterPatterns.Count);
         for (int i = 0; i < NumberofSet; i++)
         {
-            DecidingCards();
+            //DecidingCards();
+            ChooseDecidedCards(_order[i] - 1);
             FieldCardsPracticeList.Add(FieldCards);
             MyCardsPracticeList.Add(MyCards);
         }
@@ -358,6 +418,19 @@ public class PracticeSet : MonoBehaviourPunCallbacks
             MyCards.Add(new Vector3(sortedList[0] + 1, sortedList[1] - sortedList[0], 5 - sortedList[1]));
         }
         ShuffleCards();
+    }
+    void ChooseDecidedCards(int _num)
+    {
+        MyCards = new List<Vector3>()
+        {
+                    new Vector3(5, 3, 1),
+        new Vector3(5, 1, 3),
+        new Vector3(3, 5, 1),
+        new Vector3(1, 5, 3),
+        new Vector3(3, 1, 5),
+        new Vector3(1, 3, 5)
+    };
+        FieldCards = MonsterPattern.MonsterPatterns[_num];
     }
     void DecideRandomCards()
     {
@@ -605,5 +678,16 @@ public class PracticeSet : MonoBehaviourPunCallbacks
     {
         // ここでカードデータを再構築
         _BlackJackManager.Restart();
+    }
+    public void GameStartUi()
+    {
+        _BlackJackManager.GameStartUI();
+        _PhotonView.RPC("RPCGameStartUi", RpcTarget.Others);
+    }
+    [PunRPC]
+    void RPCGameStartUi()
+    {
+        // ここでカードデータを再構築
+        _BlackJackManager.GameStartUI();
     }
 }

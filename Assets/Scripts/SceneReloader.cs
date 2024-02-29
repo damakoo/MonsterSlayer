@@ -8,7 +8,7 @@ public class SceneReloader : MonoBehaviour
     [SerializeField] BlackJackManager _blackJackManager;
     public void ReloadCurrentScene()
     {
-        _blackJackManager.PhotonRestart();
+        _blackJackManager.PressedReload();
         //Scene currentScene = SceneManager.GetActiveScene();
         //SceneManager.LoadScene(currentScene.name);
     }
