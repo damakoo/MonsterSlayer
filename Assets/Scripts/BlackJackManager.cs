@@ -389,6 +389,7 @@ public class BlackJackManager : MonoBehaviour
         _PracticeSet.BlackJackState = PracticeSet.BlackJackStateList.WaitForNextTrial;
         nowTrial = _nowTrial;
         _cardslist.SetCards(_nowTrial);
+        _cardslist.MyCardsOpen();
         MyScoreUI.text = "";
         //YourScoreUI.text = "";
         _PracticeSet.MySelectedCard = NotSelectedNumber;
