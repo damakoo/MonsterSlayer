@@ -434,7 +434,7 @@ public class PracticeSet : MonoBehaviourPunCallbacks
         
          new Vector3(5, 3, 1),
         new Vector3(4, 3, 2),
-        new Vector3(3, 5, 1),
+        new Vector3(1, 5, 3),
         new Vector3(2, 4, 3),
         new Vector3(3, 1, 5),
         new Vector3(3, 2, 4),
@@ -472,7 +472,7 @@ public class PracticeSet : MonoBehaviourPunCallbacks
         }
             ShuffleCards();*/
         MyCards.Add(new Vector3(5, 3, 1));
-        MyCards.Add(new Vector3(5, 1, 3));
+        MyCards.Add(new Vector3(3, 1, 3));
         MyCards.Add(new Vector3(3, 5, 1));
         MyCards.Add(new Vector3(1, 5, 3));
         MyCards.Add(new Vector3(3, 1, 5));
