@@ -13,13 +13,19 @@ public class MonsterPattern : MonoBehaviour
     new Vector3(4,6,8),
     new Vector3(6,6,6),
     */
-    
+
     new Vector3(8,5,4),
     new Vector3(6,7,4),
     new Vector3(4,6,7),
     new Vector3(6,5,5),
     new Vector3(6,3,9),
     
+    /*
+    new Vector3(7,7,4),
+    new Vector3(7,7,4),
+    new Vector3(7,7,4),
+    new Vector3(7,7,4),
+    new Vector3(7,7,4),
     /*
      new Vector3(7,6,5),
     new Vector3(5,7,6),
