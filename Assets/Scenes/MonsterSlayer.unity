@@ -1192,7 +1192,7 @@ MonoBehaviour:
   BetTime: 8
   ResultsTime: 8
   WaitingTime: 6
-  NumberofSet: 10
+  NumberofSet: 1
   FinishUI: {fileID: 1642538915}
   _blackJackRecorder: {fileID: 670548090}
   MyScoreUI: {fileID: 2129073161}

@@ -423,12 +423,20 @@ public class PracticeSet : MonoBehaviourPunCallbacks
     {
         MyCards = new List<Vector3>()
         {
-                    new Vector3(5, 3, 1),
+
+         new Vector3(5, 3, 1),
+        new Vector3(4, 3, 2),
+        new Vector3(1, 5, 3),
+        new Vector3(2, 4, 3),
+        new Vector3(3, 1, 5),
+        new Vector3(3, 2, 4),
+            /*new Vector3(5, 3, 1),
         new Vector3(5, 1, 3),
         new Vector3(3, 5, 1),
         new Vector3(1, 5, 3),
         new Vector3(3, 1, 5),
         new Vector3(1, 3, 5)
+            */
     };
         FieldCards = MonsterPattern.MonsterPatterns[_num];
     }

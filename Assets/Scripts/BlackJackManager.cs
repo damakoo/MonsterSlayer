@@ -362,7 +362,7 @@ public class BlackJackManager : MonoBehaviour
         if (nowTrial == _PracticeSet.TrialAll)
         {
             _PracticeSet.BlackJackState = PracticeSet.BlackJackStateList.Finished;
-            FinishUI.text = "Finished! \n Win:" + ReturnSum(ScoreList).ToString() + "/5" + "\n" + "Trial: " + _blackJackRecorder.Trial.ToString() + "/10";// + "Point:" + (ReturnSumPoint(MyScorePointList) + ReturnSumPoint(YourScorePointList)).ToString();
+            FinishUI.text = "Finished! \n Win:" + ReturnSum(ScoreList).ToString() + "/5" + "\n" + "Trial: " + _blackJackRecorder.Trial.ToString() + "/" + NumberofSet.ToString();// + "Point:" + (ReturnSumPoint(MyScorePointList) + ReturnSumPoint(YourScorePointList)).ToString();
             //_blackJackRecorder.WriteResult();
             _blackJackRecorder.ExportCsv();
             if (_blackJackRecorder.Trial == NumberofSet)
