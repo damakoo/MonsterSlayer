@@ -12,7 +12,7 @@ public class PhotonNetWorkStarter: MonoBehaviourPunCallbacks
 
     public override void OnConnectedToMaster()
     {
-        PhotonNetwork.JoinOrCreateRoom("RoomB", new RoomOptions(), TypedLobby.Default);
+        PhotonNetwork.JoinOrCreateRoom("RoomA", new RoomOptions(), TypedLobby.Default);
     }
 
     public override void OnJoinedRoom()
