@@ -39,12 +39,12 @@ public class BlackJackRecorder : MonoBehaviour
         string Content = "";
         Content += "FieldNumber_x,FieldNumber_y,FieldNumber_z";
         for (int i = 0; i < MyCardsPracticeList[0].Count; i++) Content += ",MyCards" + (i + 1).ToString() + "_x" + ",MyCards" + (i + 1).ToString() + "_y" + ",MyCards" + (i + 1).ToString() + "_z";
-        Content += ",MyNumber,YourNumber,MySelectedNumber_x,MySelectedNumber_y,MySelectedNumber_z,YourSelectedNumber_x,YourSelectedNumber_y,YourSelectedNumber_z,MySelectedTime,YourSelectedTime,Score\n";
+        Content += ",MyNumber,YourNumber,MySelectedNumber_x,MySelectedNumber_y,MySelectedNumber_z,YourSelectedNumber_x,YourSelectedNumber_y,YourSelectedNumber_z,MySelectedTime,YourSelectedTime,Score,isHost\n";
         for (int i = 0; i < TrialAll; i++)
         {
             Content += FieldCardsPracticeList[i].x.ToString() + "," + FieldCardsPracticeList[i].y.ToString() + "," + FieldCardsPracticeList[i].z.ToString();
             for (int j = 0; j < MyCardsPracticeList[i].Count; j++) Content += "," + MyCardsPracticeList[i][j].x.ToString() + "," + MyCardsPracticeList[i][j].y.ToString() + "," + MyCardsPracticeList[i][j].z.ToString();
-            Content += "," + MyNumberList[i].ToString() + "," + YourNumberList[i].ToString() + "," + MySelectedNumberList[i].x.ToString() + "," + MySelectedNumberList[i].y.ToString() + "," + MySelectedNumberList[i].z.ToString() + "," + YourSelectedNumberList[i].x.ToString() + "," + YourSelectedNumberList[i].y.ToString() + "," + YourSelectedNumberList[i].z.ToString() + "," + MySelectedTime[i].ToString() + "," + YourSelectedTime[i].ToString() + "," + ScoreList[i].ToString() + "\n";
+            Content += "," + MyNumberList[i].ToString() + "," + YourNumberList[i].ToString() + "," + MySelectedNumberList[i].x.ToString() + "," + MySelectedNumberList[i].y.ToString() + "," + MySelectedNumberList[i].z.ToString() + "," + YourSelectedNumberList[i].x.ToString() + "," + YourSelectedNumberList[i].y.ToString() + "," + YourSelectedNumberList[i].z.ToString() + "," + MySelectedTime[i].ToString() + "," + YourSelectedTime[i].ToString() + "," + ScoreList[i].ToString() + "," + _BlackJackManager._hostorclient.ToString() + "\n";
         }
         return Content;
     }
