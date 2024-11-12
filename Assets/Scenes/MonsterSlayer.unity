@@ -1189,7 +1189,7 @@ MonoBehaviour:
   _cardslist: {fileID: 603039267}
   TaskLimitTime: 8
   ShowMyCardsTime: 0
-  BetTime: 8
+  BetTime: 0
   ResultsTime: 8
   WaitingTime: 6
   NumberofSet: 10
